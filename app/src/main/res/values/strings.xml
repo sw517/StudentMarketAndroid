@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Student Market</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="welcome_to_student_market">Welcome to Student Market!</string>
+    <string name="enter_your_login_details_or_register_a_new_account">Enter your login details or register a new account.</string>
+    <string name="ph_first_name">First Name</string>
+    <string name="register_new_account">Register New Account</string>
+    <string name="ph_last_name">Last Name</string>
+    <string name="ph_email">Email</string>
+    <string name="ph_password">Password</string>
+    <string name="ph_confirm_password">Confirm Password</string>
+    <string name="ph_date_of_birth">Date of Birth</string>
+</resources>
