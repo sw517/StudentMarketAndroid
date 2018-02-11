@@ -15,7 +15,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
+    private Map<String, String> parameters = new HashMap<>(); // Here we store all of our parameters that are used in API requests
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,35 +40,63 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /** Called when the user presses login */
+    /**
+     *  Called when the user presses login
+     */
     public void attemptLogin(View view) {
         Intent intent = new Intent(this, MainActivity.class);
 
-        Log.d("MyApp","I am here");
-
-
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://3cda1491.ngrok.io/api/login?email=da332@kent.ac.uk&password=deniz123";
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        Log.d("MyApp","Response is: "+ response.substring(0,500));
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("MyApp","Error with request!"+ error.toString());
-            }
-        });
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
-
+        parameters.clear();
+        parameters.put("email", "da332@kent.ac.uk");
+        parameters.put("password", "deniz123");
+        postRequest("http://f872b8a3.ngrok.io/api/login", "login");
 
         startActivity(intent);
+    }
+
+    /**
+     * Here we process the data our API provides us with
+     */
+    public void processLogin(JSONObject data) {
+        try {
+            Log.d("Data", "Hey, " + data.getString("first_name") + "!!!");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void postRequest(String url, final String type) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("Response", response);
+
+                        try {
+                            JSONObject json_response = new JSONObject(response);
+                            if (type.equals("login")) {
+                                processLogin(new JSONObject(json_response.getString("data")));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error.Response", error.toString());
+                    }
+                }
+        ) {
+            @Override // We have to override here so that our own parameters are used
+            protected Map<String, String> getParams()
+            {
+                return parameters;
+            }
+        };
+        queue.add(request);
     }
 }
