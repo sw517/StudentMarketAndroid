@@ -109,7 +109,7 @@ public class RegisterActivity extends AppCompatActivity {
         parameters.put("password", "sam_smells");
         parameters.put("password_confirmation", "sam_smells");
 
-        postRequest("http://f872b8a3.ngrok.io/api/register", "register");
+        postRequest("http://student-market.co.uk/api/register", "register");
 
         startActivity(intent);
     }

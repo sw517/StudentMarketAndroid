@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         parameters.clear();
         parameters.put("email", "da332@kent.ac.uk");
         parameters.put("password", "deniz123");
-        postRequest("http://f872b8a3.ngrok.io/api/login", "login");
+        postRequest("http://student-market.co.uk/api/login", "login");
 
         startActivity(intent);
     }
