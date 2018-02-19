@@ -46,9 +46,15 @@ public class MainActivity extends AppCompatActivity {
      *  Called when the user presses login
      */
     public void attemptLogin(View view) {
+        EditText etEmail = (EditText) findViewById(R.id.etEmail);
+        String email = etEmail.getText().toString();
+
+        EditText etPassword = (EditText) findViewById(R.id.etPassword);
+        String password = etPassword.getText().toString();
+
         parameters.clear();
-        parameters.put("email", "da332@kent.ac.uk");
-        parameters.put("password", "deniz123");
+        parameters.put("email", email);
+        parameters.put("password", password);
         postRequest("http://student-market.co.uk/api/login", "login");
     }
 
