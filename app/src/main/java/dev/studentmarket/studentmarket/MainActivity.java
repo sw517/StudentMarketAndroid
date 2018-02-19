@@ -5,8 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -30,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button registerUser = (Button) findViewById(R.id.bRegisterForm);
-        registerUser.setOnClickListener(new View.OnClickListener() {
 
+        registerUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intentRegister = new Intent(MainActivity.this, RegisterActivity.class);
@@ -44,24 +46,35 @@ public class MainActivity extends AppCompatActivity {
      *  Called when the user presses login
      */
     public void attemptLogin(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-
         parameters.clear();
         parameters.put("email", "da332@kent.ac.uk");
         parameters.put("password", "deniz123");
         postRequest("http://student-market.co.uk/api/login", "login");
-
-        startActivity(intent);
     }
 
     /**
      * Here we process the data our API provides us with
      */
-    public void processLogin(JSONObject data) {
-        try {
-            Log.d("Data", "Hey, " + data.getString("first_name") + "!!!");
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public void processLogin(Boolean success, String message, Object data) {
+        Intent intent = new Intent(this, ItemOverviewActivity.class);
+
+        Log.d("Data", data.toString());
+        Log.d("Success", success + "!");
+        Log.d("Message", message);
+
+        if (success) {
+            startActivity(intent);
+        } else {
+            final TextView loginStatus = (TextView) findViewById(R.id.loginStatusText);
+
+            loginStatus.setText(message);
+
+            // Fade out animation
+            AlphaAnimation fadeOut = new AlphaAnimation(1.0f, 0.0f);
+            loginStatus.startAnimation(fadeOut);
+            fadeOut.setDuration(1200);
+            fadeOut.setFillAfter(true);
+            fadeOut.setStartOffset(4200);
         }
     }
 
@@ -77,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             JSONObject json_response = new JSONObject(response);
                             if (type.equals("login")) {
-                                processLogin(new JSONObject(json_response.getString("data")));
+                                processLogin(json_response.getBoolean("success"), json_response.getString("message"), json_response.get("data"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
