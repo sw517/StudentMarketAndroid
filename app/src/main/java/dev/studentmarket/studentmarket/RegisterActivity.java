@@ -101,13 +101,31 @@ public class RegisterActivity extends AppCompatActivity {
     public void attemptRegistration(View view) {
         Intent intent = new Intent(this, MainActivity.class);
 
+        EditText etFirstName = (EditText) findViewById(R.id.etFirstName);
+        String firstName = etFirstName.getText().toString();
+
+        EditText etLastName = (EditText) findViewById(R.id.etLastName);
+        String lastName = etLastName.getText().toString();
+
+        EditText etEmail = (EditText) findViewById(R.id.etEmail);
+        String email = etEmail.getText().toString();
+
+        EditText etDOB = (EditText) findViewById(R.id.etDOB);
+        String DOB = etDOB.getText().toString();
+
+        EditText etPassword = (EditText) findViewById(R.id.etPassword);
+        String password = etPassword.getText().toString();
+
+        EditText etConfirmPassword = (EditText) findViewById(R.id.etConfirmPassword);
+        String confirmPassword = etConfirmPassword.getText().toString();
+
         parameters.clear();
-        parameters.put("first_name", "Mr");
-        parameters.put("last_name", "Denzil");
-        parameters.put("email", "denzil@deniz.tr");
-        parameters.put("date_of_birth", "1996-05-27");
-        parameters.put("password", "sam_smells");
-        parameters.put("password_confirmation", "sam_smells");
+        parameters.put("first_name", firstName);
+        parameters.put("last_name", lastName);
+        parameters.put("email", email);
+        parameters.put("date_of_birth", DOB);
+        parameters.put("password", password);
+        parameters.put("password_confirmation", confirmPassword);
 
         postRequest("http://student-market.co.uk/api/register", "register");
 
@@ -125,6 +143,9 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Submits a POST request to the API
+     */
     public void postRequest(String url, final String type) {
         RequestQueue queue = Volley.newRequestQueue(this);
         StringRequest request = new StringRequest(Request.Method.POST, url,

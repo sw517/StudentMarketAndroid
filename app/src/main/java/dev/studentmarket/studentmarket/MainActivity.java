@@ -84,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Submits a POST request to the API
+     */
     public void postRequest(String url, final String type) {
         RequestQueue queue = Volley.newRequestQueue(this);
         StringRequest request = new StringRequest(Request.Method.POST, url,
