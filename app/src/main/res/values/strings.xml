@@ -11,4 +11,6 @@
     <string name="ph_password">Password</string>
     <string name="ph_confirm_password">Confirm Password</string>
     <string name="ph_date_of_birth">Date of Birth</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>
