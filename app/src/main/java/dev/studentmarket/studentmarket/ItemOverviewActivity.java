@@ -1,16 +1,11 @@
 package dev.studentmarket.studentmarket;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -34,6 +29,7 @@ public class ItemOverviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_overview);
+        String apiToken = "BlJ5Aq3TJKsl8LljHUbw1vaP7LNjuoUCSrhuPvKVsYCnwUo2uTBK8WclXDxX";
 
         /**
          * Navigation Menu
@@ -44,7 +40,7 @@ public class ItemOverviewActivity extends AppCompatActivity {
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getItems("http://student-market.co.uk/api/items", "items");
+        getItems("http://student-market.co.uk/api/items?api_token=" + apiToken, "items");
     }
 
     /**
@@ -63,25 +59,13 @@ public class ItemOverviewActivity extends AppCompatActivity {
      * Here we process the data our API provides us with
      */
     public void processData(Boolean success, String message, Object data) {
-        Intent intent = new Intent(this, ItemOverviewActivity.class);
 
         Log.d("Data", data.toString());
         Log.d("Success", success + "!");
         Log.d("Message", message);
 
         if (success) {
-//            startActivity(intent);
         } else {
-//            final TextView loginStatus = (TextView) findViewById(R.id.loginStatusText);
-
-//            loginStatus.setText(message);
-
-            // Fade out animation
-//            AlphaAnimation fadeOut = new AlphaAnimation(1.0f, 0.0f);
-//            loginStatus.startAnimation(fadeOut);
-//            fadeOut.setDuration(1200);
-//            fadeOut.setFillAfter(true);
-//            fadeOut.setStartOffset(4200);
         }
     }
 

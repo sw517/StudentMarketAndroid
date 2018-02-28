@@ -1,6 +1,8 @@
 package dev.studentmarket.studentmarket;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +22,14 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,12 +71,53 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Here we process the data our API provides us with
      */
-    public void processLogin(Boolean success, String message, Object data) {
+    public void processLogin(Boolean success, String message, Object data, JSONObject data2) {
         Intent intent = new Intent(this, ItemOverviewActivity.class);
+        String varAPIKEY = "";
 
         Log.d("Data", data.toString());
         Log.d("Success", success + "!");
         Log.d("Message", message);
+
+        // GET API TOKEN
+        try {
+            varAPIKEY = data2.getString("api_token");
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // CREATE LOCAL FILE FOR API TOKEN
+        String filename = "localAPIToken";
+        String fileContents = varAPIKEY;
+        FileOutputStream outputStream;
+
+        try {
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(fileContents.getBytes());
+            outputStream.close();
+            Log.d("FileCreation", "File Created");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // TESTING OPENING FILE
+        try {
+            String fileString;
+            FileInputStream fileInputStream = openFileInput("localAPIToken");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while((fileString=bufferedReader.readLine()) != null) {
+                stringBuffer.append(fileString);
+                Log.d("APITOKENREADING", stringBuffer.toString());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         if (success) {
             startActivity(intent);
@@ -99,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             JSONObject json_response = new JSONObject(response);
                             if (type.equals("login")) {
-                                processLogin(json_response.getBoolean("success"), json_response.getString("message"), json_response.get("data"));
+                                processLogin(json_response.getBoolean("success"), json_response.getString("message"), json_response.get("data"), json_response.getJSONObject("data"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
