@@ -6,6 +6,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -14,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,14 +96,34 @@ public class ItemOverviewActivity extends AppCompatActivity {
     /**
      * Here we process the data our API provides us with
      */
-    public void processData(Boolean success, String message, Object data) {
+    public void processData(Boolean success, String message, JSONObject data) {
+        ListView listView;
+//        ArrayList<String> testData = new ArrayList<>(Arrays.asList("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"));
+        ArrayList<String> testData = new ArrayList<>();
+
 
         Log.d("Data", data.toString());
         Log.d("Success", success + "!");
         Log.d("Message", message);
 
-        if (success) {
-        } else {
+        // GET ITEM DATA
+        try {
+            JSONArray itemData = data.getJSONObject("items").getJSONArray("data");
+            Log.d("ItemData", itemData.toString());
+            JSONObject item1 = itemData.getJSONObject(0);
+            Log.d("Item1", item1.toString());
+
+            for(int i = 0; i < itemData.length(); i++) {
+                testData.add(itemData.getJSONObject(i).getString("name"));
+            }
+
+            // ADD ITEMS TO LIST VIEW ON SCREEN
+            listView = findViewById(R.id.listview);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, testData);
+            listView.setAdapter(adapter);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -117,7 +143,7 @@ public class ItemOverviewActivity extends AppCompatActivity {
                         try {
                             JSONObject json_response = new JSONObject(response);
                             if (type.equals("items")) {
-                                processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.get("data"));
+                                processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
