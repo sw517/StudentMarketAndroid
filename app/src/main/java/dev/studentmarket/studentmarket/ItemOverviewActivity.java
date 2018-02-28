@@ -183,8 +183,9 @@ public class ItemOverviewActivity extends AppCompatActivity {
                     Intent details = new Intent(ItemOverviewActivity.this, ItemDetailsActivity.class);
                     String itemId = ((TextView) view.findViewById(R.id.textviewid)).getText().toString();
                     Log.d("ItemID", itemId);
-//                    startActivity(details);
-                    startActivityForResult(details, Integer.parseInt(itemId));
+//                    startActivityForResult(details, Integer.parseInt(itemId));
+                    details.putExtra("id", itemId);
+                    startActivity(details);
 
                 }
             });
