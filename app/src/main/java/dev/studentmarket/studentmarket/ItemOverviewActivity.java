@@ -17,6 +17,11 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +34,7 @@ public class ItemOverviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_overview);
-        String apiToken = "BlJ5Aq3TJKsl8LljHUbw1vaP7LNjuoUCSrhuPvKVsYCnwUo2uTBK8WclXDxX";
+        String apiToken = ""; // CREATE INSTANCE TO ASSIGN FROM FILE
 
         /**
          * Navigation Menu
@@ -39,6 +44,9 @@ public class ItemOverviewActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // OPEN FILE TO GET LOCALLY STORED API TOKEN
+        apiToken = getAPIToken();
 
         getItems("http://student-market.co.uk/api/items?api_token=" + apiToken, "items");
     }
@@ -53,6 +61,30 @@ public class ItemOverviewActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Find local file containing API TOKEN
+     */
+    public String getAPIToken() {
+        try {
+            String fileString;
+            FileInputStream fileInputStream = openFileInput("localAPIToken");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while((fileString=bufferedReader.readLine()) != null) {
+                stringBuffer.append(fileString);
+                Log.d("APITOKENREADING", stringBuffer.toString());
+                String apiToken = stringBuffer.toString();
+                return apiToken;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

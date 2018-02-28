@@ -101,24 +101,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // TESTING OPENING FILE
-        try {
-            String fileString;
-            FileInputStream fileInputStream = openFileInput("localAPIToken");
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            StringBuffer stringBuffer = new StringBuffer();
-            while((fileString=bufferedReader.readLine()) != null) {
-                stringBuffer.append(fileString);
-                Log.d("APITOKENREADING", stringBuffer.toString());
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
         if (success) {
             startActivity(intent);
         } else {
@@ -133,6 +115,31 @@ public class MainActivity extends AppCompatActivity {
             fadeOut.setFillAfter(true);
             fadeOut.setStartOffset(4200);
         }
+    }
+
+    // COPY FUNCTION INTO NEW ACTIVITIES TO GET API TOKEN
+    /**
+     * Find local file containing API TOKEN
+     */
+    public String getAPIToken() {
+        try {
+            String fileString;
+            FileInputStream fileInputStream = openFileInput("localAPIToken");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while((fileString=bufferedReader.readLine()) != null) {
+                stringBuffer.append(fileString);
+                Log.d("APITOKENREADING", stringBuffer.toString());
+                String apiToken = stringBuffer.toString();
+                return apiToken;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
