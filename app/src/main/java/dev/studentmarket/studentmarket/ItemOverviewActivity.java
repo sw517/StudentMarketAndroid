@@ -1,14 +1,25 @@
 package dev.studentmarket.studentmarket;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -70,65 +82,6 @@ public class ItemOverviewActivity extends AppCompatActivity {
     }
 
     /**
-     * Find local file containing API TOKEN
-     */
-    public String getAPIToken() {
-        try {
-            String fileString;
-            FileInputStream fileInputStream = openFileInput("localAPIToken");
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            StringBuffer stringBuffer = new StringBuffer();
-            while((fileString=bufferedReader.readLine()) != null) {
-                stringBuffer.append(fileString);
-                Log.d("APITOKENREADING", stringBuffer.toString());
-                String apiToken = stringBuffer.toString();
-                return apiToken;
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Here we process the data our API provides us with
-     */
-    public void processData(Boolean success, String message, JSONObject data) {
-        ListView listView;
-//        ArrayList<String> testData = new ArrayList<>(Arrays.asList("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"));
-        ArrayList<String> testData = new ArrayList<>();
-
-
-        Log.d("Data", data.toString());
-        Log.d("Success", success + "!");
-        Log.d("Message", message);
-
-        // GET ITEM DATA
-        try {
-            JSONArray itemData = data.getJSONObject("items").getJSONArray("data");
-            Log.d("ItemData", itemData.toString());
-            JSONObject item1 = itemData.getJSONObject(0);
-            Log.d("Item1", item1.toString());
-
-            for(int i = 0; i < itemData.length(); i++) {
-                testData.add(itemData.getJSONObject(i).getString("name"));
-            }
-
-            // ADD ITEMS TO LIST VIEW ON SCREEN
-            listView = findViewById(R.id.listview);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, testData);
-            listView.setAdapter(adapter);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    /**
      * Submits a POST request to the API
      */
     public void getItems(String url, final String type) {
@@ -164,5 +117,119 @@ public class ItemOverviewActivity extends AppCompatActivity {
             }
         };
         queue.add(request);
+    }
+
+    /**
+     * Find local file containing API TOKEN
+     */
+    public String getAPIToken() {
+        try {
+            String fileString;
+            FileInputStream fileInputStream = openFileInput("localAPIToken");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while((fileString=bufferedReader.readLine()) != null) {
+                stringBuffer.append(fileString);
+                Log.d("APITOKENREADING", stringBuffer.toString());
+                String apiToken = stringBuffer.toString();
+                return apiToken;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Here we process the data our API provides us with
+     */
+    public void processData(Boolean success, String message, JSONObject data) {
+        ListView listView;
+        ArrayList<String> titles = new ArrayList<>();
+        ArrayList<String> descriptions = new ArrayList<>();
+        ArrayList<String> images = new ArrayList<>();
+        ArrayList<String> ids = new ArrayList<>();
+
+        Log.d("Data", data.toString());
+        Log.d("Success", success + "!");
+        Log.d("Message", message);
+
+        // GET ITEM DATA
+        try {
+            JSONArray itemData = data.getJSONObject("items").getJSONArray("data");
+            Log.d("ItemData", itemData.toString());
+            JSONObject item1 = itemData.getJSONObject(0);
+            Log.d("Item1", item1.toString());
+
+            for(int i = 0; i < itemData.length(); i++) {
+                titles.add(itemData.getJSONObject(i).getString("name"));
+                descriptions.add(itemData.getJSONObject(i).getString("description"));
+                String itemId = Integer.toString(itemData.getJSONObject(i).getInt("id"));
+                ids.add(itemId);
+                images.add("http://student-market.co.uk/storage/item/1/K1Om0n1q36lv0WsHINfIzYbRwMWEE6bP8pbb4H2g.jpeg");
+            }
+
+            // ADD ITEMS TO LIST VIEW ON SCREEN
+            listView = findViewById(R.id.listview);
+            CustomAdapter adapter = new CustomAdapter(this, titles, descriptions, ids, images);
+            listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
+                    Intent details = new Intent(ItemOverviewActivity.this, ItemDetailsActivity.class);
+                    String itemId = ((TextView) view.findViewById(R.id.textviewid)).getText().toString();
+                    Log.d("ItemID", itemId);
+//                    startActivity(details);
+                    startActivityForResult(details, Integer.parseInt(itemId));
+
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+/**
+ * This class goes through the view rows for the adapter and applies the data to the XML Elements
+ */
+class CustomAdapter extends ArrayAdapter<String> {
+    Context context;
+    ArrayList<String> titleArray;
+    ArrayList<String> descriptionArray;
+    ArrayList<String> idArray;
+    ArrayList<String> imageArray;
+
+    CustomAdapter(Context c, ArrayList<String> titles, ArrayList<String> descriptions, ArrayList<String> id, ArrayList<String> images) {
+
+        super(c, R.layout.single_row, R.id.textviewtitle, titles);
+        this.context = c;
+        this.titleArray = titles;
+        this.descriptionArray = descriptions;
+        this.idArray = id;
+        this.imageArray = images;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View row = layoutInflater.inflate(R.layout.single_row, parent, false);
+        ImageView itemImage = row.findViewById(R.id.imageView);
+        TextView itemTitle = row.findViewById(R.id.textviewtitle);
+        TextView itemDescription = row.findViewById(R.id.textviewdescription);
+        TextView itemId = row.findViewById(R.id.textviewid);
+
+//        itemImage.setImageResource();
+        itemTitle.setText(titleArray.get(position));
+        itemDescription.setText(descriptionArray.get(position));
+        itemId.setText(idArray.get(position));
+
+        return row;
     }
 }

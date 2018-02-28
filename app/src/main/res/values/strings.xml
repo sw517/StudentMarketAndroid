@@ -13,4 +13,5 @@
     <string name="ph_date_of_birth">Date of Birth</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="title_activity_item_details">ItemDetails</string>
 </resources>
