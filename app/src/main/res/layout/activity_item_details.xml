@@ -7,59 +7,74 @@
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/itemMainImage"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="15dp"
-            app:srcCompat="@mipmap/ic_launcher" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/itemDetailsTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:paddingBottom="0dp"
-            android:text="TextView"
-            android:textSize="24sp" />
+            <ImageView
+                android:id="@+id/itemMainImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minHeight="200dp"
+                android:padding="15dp"
+                app:srcCompat="@mipmap/ic_launcher" />
 
-        <TextView
-            android:id="@+id/itemDetailsType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:height="0dp"
-            android:text="TextView"
-            android:textSize="18sp" />
+            <TextView
+                android:id="@+id/itemDetailsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:paddingBottom="30dp"
+                android:text="TextView"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/itemDetailsCost"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:paddingTop="0dp"
-            android:height="0dp"
-            android:text="TextView"
-            android:textSize="18sp" />
+            <TextView
+                android:id="@+id/itemDetailsType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="TextView"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/itemDetailsDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:text="TextView" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/itemDetailsCost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:paddingTop="0dp"
+                android:text="TextView"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:paddingBottom="0dp"
+                android:text="Description"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/itemDetailsDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:text="TextView" />
+        </LinearLayout>
+    </RelativeLayout>
 
 
     <android.support.design.widget.NavigationView
