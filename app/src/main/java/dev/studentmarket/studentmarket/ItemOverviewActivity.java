@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -45,38 +48,61 @@ import java.util.Map;
 
 public class ItemOverviewActivity extends AppCompatActivity {
     private Map<String, String> parameters = new HashMap<>(); // Here we store all of our parameters that are used in API requests
-    private DrawerLayout mDrawerLayout; // Needed for Navigation Menu
-    private ActionBarDrawerToggle mToggle; // Needed for Navigation Menu
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+    private Context className;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_overview);
         String apiToken = ""; // CREATE INSTANCE TO ASSIGN FROM FILE
-
-        /**
-         * Navigation Menu
-         */
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        className =  this.getApplicationContext();
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        // SWITCH ACTIVITY ON ITEM CLICK
+                        String navTitle = menuItem.getTitle().toString();
+                        if (navTitle.equals("All Items")) {
+                            Intent intent = new Intent(className, ItemOverviewActivity.class);
+                            startActivity(intent);
+                        } else if (navTitle.equals("Profile")) {
+                            Intent intent = new Intent(className, ItemOverviewActivity.class);
+                            startActivity(intent);
+                        } else if (navTitle.equals("Account")) {
+                            Intent intent = new Intent(className, ItemOverviewActivity.class);
+                            startActivity(intent);
+                        } else if (navTitle.equals("Logout")) {
+                            Intent intent = new Intent(className, MainActivity.class);
+                            startActivity(intent);
+                        }
+
+                        return true;
+                    }
+                });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // OPEN FILE TO GET LOCALLY STORED API TOKEN
         apiToken = getAPIToken();
 
-        getItems("http://student-market.co.uk/api/items?api_token=" + apiToken, "items");
+        getItems("https://student-market.co.uk/api/items?api_token=" + apiToken, "items");
     }
 
-    /**
-     * Allow Navigation Button to be pressed
-     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        if(mToggle.onOptionsItemSelected(item)) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

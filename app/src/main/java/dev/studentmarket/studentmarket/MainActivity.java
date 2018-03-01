@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         parameters.clear();
         parameters.put("email", email);
         parameters.put("password", password);
-        postRequest("http://student-market.co.uk/api/login", "login");
+        postRequest("https://student-market.co.uk/api/login", "login");
     }
 
     /**

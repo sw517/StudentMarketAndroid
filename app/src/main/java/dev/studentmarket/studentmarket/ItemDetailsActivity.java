@@ -1,5 +1,9 @@
 package dev.studentmarket.studentmarket;
 
+import android.content.Context;
+import android.content.Intent;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,43 +35,67 @@ import java.util.Map;
 
 public class ItemDetailsActivity extends AppCompatActivity {
     private Map<String, String> parameters = new HashMap<>(); // Here we store all of our parameters that are used in API requests
-    private DrawerLayout mDrawerLayout; // Needed for Navigation Menu
-    private ActionBarDrawerToggle mToggle; // Needed for Navigation Menu
+
     private String apiToken = "";
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+    private Context className;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_details);
         String itemId = getIntent().getExtras().getString("id", "0");
-        Log.d("PassedId", itemId);
+
+        className =  this.getApplicationContext();
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        // SWITCH ACTIVITY ON ITEM CLICK
+                        String navTitle = menuItem.getTitle().toString();
+                        if (navTitle.equals("All Items")) {
+                            Intent intent = new Intent(className, ItemOverviewActivity.class);
+                            startActivity(intent);
+                        } else if (navTitle.equals("Profile")) {
+                            Intent intent = new Intent(className, ItemOverviewActivity.class);
+                            startActivity(intent);
+                        } else if (navTitle.equals("Account")) {
+                            Intent intent = new Intent(className, ItemOverviewActivity.class);
+                            startActivity(intent);
+                        } else if (navTitle.equals("Logout")) {
+                            Intent intent = new Intent(className, MainActivity.class);
+                            startActivity(intent);
+                        }
+                        return true;
+                    }
+                });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // OPEN FILE TO GET LOCALLY STORED API TOKEN
         apiToken = getAPIToken();
 
-        getDetails("http://student-market.co.uk/api/items/1/" + itemId + "?api_token=" + apiToken, "items");
-
-        /**
-         * Navigation Menu
-         */
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
-        mDrawerLayout.addDrawerListener(mToggle);
-        mToggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getDetails("https://student-market.co.uk/api/items/1/" + itemId + "?api_token=" + apiToken, "items");
     }
 
-    /**
-     * Allow Navigation Button to be pressed
-     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        if(mToggle.onOptionsItemSelected(item)) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     /**
      * Submits a POST request to the API
