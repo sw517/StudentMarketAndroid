@@ -14,7 +14,7 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="15dp">
 
@@ -33,7 +33,7 @@
                 android:minHeight="100dp"
                 android:maxHeight="200dp"
                 android:padding="15dp"
-                app:srcCompat="@mipmap/ic_launcher" />
+                app:srcCompat="@mipmap/ic_launcher" android:contentDescription="TODO"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -119,6 +119,12 @@
                 android:ems="10"
                 android:hint="@string/ph_confirm_password"
                 android:inputType="textPassword" />
+
+            <Button
+                android:id="@+id/updateAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Update" />
 
         </LinearLayout>
 
