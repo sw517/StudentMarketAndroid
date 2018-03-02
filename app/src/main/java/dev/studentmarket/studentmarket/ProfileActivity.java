@@ -10,30 +10,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ItemDetailsActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
+
     private Map<String, String> parameters = new HashMap<>(); // Here we store all of our parameters that are used in API requests
 
     private String apiToken = "";
@@ -44,8 +31,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_details);
-        String itemId = getIntent().getExtras().getString("id", "0");
+        setContentView(R.layout.activity_profile);
 
         className =  this.getApplicationContext();
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -82,8 +68,6 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
         // OPEN FILE TO GET LOCALLY STORED API TOKEN
         apiToken = getAPIToken();
-
-        getDetails("https://student-market.co.uk/api/items/1/" + itemId + "?api_token=" + apiToken, "items");
     }
 
     @Override
@@ -94,45 +78,6 @@ public class ItemDetailsActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    /**
-     * Submits a POST request to the API
-     */
-    public void getDetails(String url, final String type) {
-        RequestQueue queue = Volley.newRequestQueue(this);
-        StringRequest request = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("Response", response);
-
-                        try {
-                            JSONObject json_response = new JSONObject(response);
-                            if (type.equals("items")) {
-                                processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.toString());
-                    }
-                }
-        ) {
-            @Override // We have to override here so that our own parameters are used
-            protected Map<String, String> getParams()
-            {
-                return parameters;
-            }
-        };
-        queue.add(request);
     }
 
     /**
@@ -157,52 +102,5 @@ public class ItemDetailsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * Here we process the data our API provides us with
-     */
-    public void processData(Boolean success, String message, JSONObject data) {
-
-        Log.d("Data", data.toString());
-        Log.d("Success", success + "!");
-        Log.d("Message", message);
-
-//         GET ITEM DATA
-        try {
-            JSONObject itemData = data.getJSONObject("item");
-            Log.d("ItemData", itemData.toString());
-            String title = itemData.getString("name");
-            String type = itemData.getString("type");
-            String description = itemData.getString("description");
-            String price = itemData.getString("price");
-            String trade = itemData.getString("trade");
-
-            TextView titleText = (TextView)findViewById(R.id.itemDetailsTitle);
-            TextView typeText = (TextView)findViewById(R.id.itemDetailsType);
-            TextView descriptionText = (TextView)findViewById(R.id.itemDetailsDescription);
-            TextView costText = (TextView)findViewById(R.id.itemDetailsCost);
-
-            titleText.setText(title);
-            descriptionText.setText(description);
-
-            // CHANGE LETTER CASING TO LOOK NEATER
-            // AND FORMAT COST TEXT
-            if (type.equals("sell")) {
-                String cost = "£" + price;
-                typeText.setText("Price:");
-                costText.setText(cost);
-            } else if (type.equals("swap")) {
-                typeText.setText("Swap for:");
-                costText.setText(trade);
-            } else if (type.equals("part-exchange")) {
-                String cost = "£" + price + " + " + trade;
-                typeText.setText("Part-Exchange for:");
-                costText.setText(cost);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 }
