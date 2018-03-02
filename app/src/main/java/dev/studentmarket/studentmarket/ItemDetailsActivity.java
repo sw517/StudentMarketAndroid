@@ -52,7 +52,8 @@ public class ItemDetailsActivity extends AppCompatActivity {
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
-
+        // OPEN FILE TO GET LOCALLY STORED API TOKEN
+        apiToken = getAPIToken();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -72,6 +73,8 @@ public class ItemDetailsActivity extends AppCompatActivity {
                             Intent intent = new Intent(className, AccountActivity.class);
                             startActivity(intent);
                         } else if (navTitle.equals("Logout")) {
+                            postRequest("https://student-market.co.uk/api/logout?api_token=" + apiToken, "logout");
+
                             Intent intent = new Intent(className, MainActivity.class);
                             startActivity(intent);
                         }
@@ -80,10 +83,9 @@ public class ItemDetailsActivity extends AppCompatActivity {
                 });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // OPEN FILE TO GET LOCALLY STORED API TOKEN
-        apiToken = getAPIToken();
 
-        getDetails("https://student-market.co.uk/api/items/1/" + itemId + "?api_token=" + apiToken, "items");
+
+        postRequest("https://student-market.co.uk/api/items/1/" + itemId + "?api_token=" + apiToken, "items");
     }
 
     @Override
@@ -100,7 +102,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
     /**
      * Submits a POST request to the API
      */
-    public void getDetails(String url, final String type) {
+    public void postRequest(String url, final String type) {
         RequestQueue queue = Volley.newRequestQueue(this);
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -111,9 +113,9 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
                         try {
                             JSONObject json_response = new JSONObject(response);
-                            if (type.equals("items")) {
-                                processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
-                            }
+
+                            processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"), type);
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -162,47 +164,52 @@ public class ItemDetailsActivity extends AppCompatActivity {
     /**
      * Here we process the data our API provides us with
      */
-    public void processData(Boolean success, String message, JSONObject data) {
+    public void processData(Boolean success, String message, JSONObject data, String type) {
 
         Log.d("Data", data.toString());
         Log.d("Success", success + "!");
         Log.d("Message", message);
 
 //         GET ITEM DATA
-        try {
-            JSONObject itemData = data.getJSONObject("item");
-            Log.d("ItemData", itemData.toString());
-            String title = itemData.getString("name");
-            String type = itemData.getString("type");
-            String description = itemData.getString("description");
-            String price = itemData.getString("price");
-            String trade = itemData.getString("trade");
+        if (type.equals("items")) {
+            try {
+                JSONObject itemData = data.getJSONObject("item");
+                Log.d("ItemData", itemData.toString());
+                String title = itemData.getString("name");
+                String dtype = itemData.getString("type");
+                String description = itemData.getString("description");
+                String price = itemData.getString("price");
+                String trade = itemData.getString("trade");
 
-            TextView titleText = (TextView)findViewById(R.id.itemDetailsTitle);
-            TextView typeText = (TextView)findViewById(R.id.itemDetailsType);
-            TextView descriptionText = (TextView)findViewById(R.id.itemDetailsDescription);
-            TextView costText = (TextView)findViewById(R.id.itemDetailsCost);
+                TextView titleText = (TextView)findViewById(R.id.itemDetailsTitle);
+                TextView typeText = (TextView)findViewById(R.id.itemDetailsType);
+                TextView descriptionText = (TextView)findViewById(R.id.itemDetailsDescription);
+                TextView costText = (TextView)findViewById(R.id.itemDetailsCost);
 
-            titleText.setText(title);
-            descriptionText.setText(description);
+                titleText.setText(title);
+                descriptionText.setText(description);
 
-            // CHANGE LETTER CASING TO LOOK NEATER
-            // AND FORMAT COST TEXT
-            if (type.equals("sell")) {
-                String cost = "£" + price;
-                typeText.setText("Price:");
-                costText.setText(cost);
-            } else if (type.equals("swap")) {
-                typeText.setText("Swap for:");
-                costText.setText(trade);
-            } else if (type.equals("part-exchange")) {
-                String cost = "£" + price + " + " + trade;
-                typeText.setText("Part-Exchange for:");
-                costText.setText(cost);
+                // CHANGE LETTER CASING TO LOOK NEATER
+                // AND FORMAT COST TEXT
+                if (dtype.equals("sell")) {
+                    String cost = "£" + price;
+                    typeText.setText("Price:");
+                    costText.setText(cost);
+                } else if (dtype.equals("swap")) {
+                    typeText.setText("Swap for:");
+                    costText.setText(trade);
+                } else if (dtype.equals("part-exchange")) {
+                    String cost = "£" + price + " + " + trade;
+                    typeText.setText("Part-Exchange for:");
+                    costText.setText(cost);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+        } else if (type.equals("logout")) {
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d("Logout", "test");
         }
     }
 }
