@@ -52,9 +52,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // CLOSE APP IF BACK BUTTON PRESSED ON LOGIN SCREEN
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
+        this.finishAndRemoveTask();
     }
 
     /**
