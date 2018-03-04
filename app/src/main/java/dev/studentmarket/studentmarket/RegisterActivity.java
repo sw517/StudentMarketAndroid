@@ -127,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
         parameters.put("password", password);
         parameters.put("password_confirmation", confirmPassword);
 
-        postRequest("http://student-market.co.uk/api/register", "register");
+        postRequest("https://student-market.co.uk/api/register", "register");
 
         startActivity(intent);
     }
