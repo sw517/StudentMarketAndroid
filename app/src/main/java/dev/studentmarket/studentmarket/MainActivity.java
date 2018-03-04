@@ -52,7 +52,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // CLOSE APP IF BACK BUTTON PRESSED ON LOGIN SCREEN
+    /**
+     *  CLOSE APP IF BACK BUTTON PRESSED ON LOGIN SCREEN
+     */
     @Override
     public void onBackPressed() {
         this.finishAndRemoveTask();
@@ -77,9 +79,10 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Here we process the data our API provides us with
      */
-    public void processLogin(Boolean success, String message, Object data, JSONObject data2) {
+    public void processLogin(Boolean success, String message, JSONObject data) {
         Intent intent = new Intent(this, ItemOverviewActivity.class);
         String varAPIKEY = "";
+        String varUserId = "";
 
         Log.d("Data", data.toString());
         Log.d("Success", success + "!");
@@ -87,7 +90,15 @@ public class MainActivity extends AppCompatActivity {
 
         // GET API TOKEN
         try {
-            varAPIKEY = data2.getString("api_token");
+            varAPIKEY = data.getString("api_token");
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // GET API TOKEN
+        try {
+            varUserId = data.getString("id");
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -96,17 +107,30 @@ public class MainActivity extends AppCompatActivity {
         // CREATE LOCAL FILE FOR API TOKEN
         String filename = "localAPIToken";
         String fileContents = varAPIKEY;
-        FileOutputStream outputStream;
+        FileOutputStream outputStreamAPI;
 
         try {
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(fileContents.getBytes());
-            outputStream.close();
-            Log.d("FileCreation", "File Created");
+            outputStreamAPI = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStreamAPI.write(fileContents.getBytes());
+            outputStreamAPI.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        // CREATE LOCAL FILE FOR USER ID
+        filename = "localUserId";
+        fileContents = varUserId;
+        FileOutputStream outputStreamId;
+
+        try {
+            outputStreamId = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStreamId.write(fileContents.getBytes());
+            outputStreamId.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // LOAD NEXT PAGE IF LOGIN SUCCESSFUL
         if (success) {
             startActivity(intent);
         } else {
@@ -121,31 +145,6 @@ public class MainActivity extends AppCompatActivity {
             fadeOut.setFillAfter(true);
             fadeOut.setStartOffset(4200);
         }
-    }
-
-    // COPY FUNCTION INTO NEW ACTIVITIES TO GET API TOKEN
-    /**
-     * Find local file containing API TOKEN
-     */
-    public String getAPIToken() {
-        try {
-            String fileString;
-            FileInputStream fileInputStream = openFileInput("localAPIToken");
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            StringBuffer stringBuffer = new StringBuffer();
-            while((fileString=bufferedReader.readLine()) != null) {
-                stringBuffer.append(fileString);
-                Log.d("APITOKENREADING", stringBuffer.toString());
-                String apiToken = stringBuffer.toString();
-                return apiToken;
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /**
@@ -163,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             JSONObject json_response = new JSONObject(response);
                             if (type.equals("login")) {
-                                processLogin(json_response.getBoolean("success"), json_response.getString("message"), json_response.get("data"), json_response.getJSONObject("data"));
+                                processLogin(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

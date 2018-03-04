@@ -47,13 +47,15 @@ public class ItemDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_item_details);
         String itemId = getIntent().getExtras().getString("id", "0");
 
+        // OPEN FILE TO GET LOCALLY STORED API TOKEN
+        apiToken = getAPIToken();
+
+        // NEEDED FOR NAVIGATION MENU
         className =  this.getApplicationContext();
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
-        // OPEN FILE TO GET LOCALLY STORED API TOKEN
-        apiToken = getAPIToken();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -83,11 +85,12 @@ public class ItemDetailsActivity extends AppCompatActivity {
                 });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
         postRequest("https://student-market.co.uk/api/items/1/" + itemId + "?api_token=" + apiToken, "items");
     }
 
+    /**
+     * Allows navigation button to be pressed
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

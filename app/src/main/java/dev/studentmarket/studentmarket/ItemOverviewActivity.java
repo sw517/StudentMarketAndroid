@@ -58,6 +58,8 @@ public class ItemOverviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_overview);
         String apiToken = ""; // CREATE INSTANCE TO ASSIGN FROM FILE
+
+        // NEEDED FOR NAVIGATION MENU
         className =  this.getApplicationContext();
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
@@ -97,6 +99,9 @@ public class ItemOverviewActivity extends AppCompatActivity {
         getItems("https://student-market.co.uk/api/items?api_token=" + apiToken, "items");
     }
 
+    /**
+     * Allows navigation button to be pressed
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
