@@ -14,4 +14,6 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="title_activity_item_details">ItemDetails</string>
+    <string name="profile">Profile</string>
+    <string name="seller_profile">Seller Profile</string>
 </resources>

@@ -7,14 +7,15 @@
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout">
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="15dp">
 
             <ImageView
                 android:id="@+id/itemMainImage"
@@ -30,7 +31,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:padding="10dp"
                 android:paddingBottom="30dp"
                 android:text="TextView"
                 android:textSize="24sp"
@@ -41,8 +41,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:text="TextView"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -52,8 +50,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:padding="10dp"
-                android:paddingTop="0dp"
                 android:text="TextView"
                 android:textSize="18sp" />
 
@@ -61,8 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:padding="10dp"
-                android:paddingBottom="0dp"
+                android:paddingTop="20dp"
                 android:text="Description"
                 android:textStyle="bold" />
 
@@ -71,10 +66,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:padding="10dp"
                 android:text="TextView" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text="View Seller Profile"
+                android:onClick="viewSeller"/>
         </LinearLayout>
-    </RelativeLayout>
+    </ScrollView>
 
 
     <android.support.design.widget.NavigationView

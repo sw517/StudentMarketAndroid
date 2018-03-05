@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -40,12 +42,15 @@ public class ItemDetailsActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private Context className;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_details);
         String itemId = getIntent().getExtras().getString("id", "0");
+        userId = getIntent().getExtras().getString("userId", "0");
+        Log.d("Got user ID", userId);
 
         // OPEN FILE TO GET LOCALLY STORED API TOKEN
         apiToken = getAPIToken();
@@ -217,5 +222,14 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
             Log.d("Logout", "test");
         }
+    }
+
+    /**
+     *  Called when the user presses login
+     */
+    public void viewSeller(View view) {
+        Intent details = new Intent(ItemDetailsActivity.this, ProfileActivity.class);
+        details.putExtra("userId", userId);
+        startActivity(details);
     }
 }

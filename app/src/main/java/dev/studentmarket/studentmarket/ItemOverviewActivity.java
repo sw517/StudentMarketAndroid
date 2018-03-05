@@ -186,6 +186,7 @@ public class ItemOverviewActivity extends AppCompatActivity {
         ArrayList<String> descriptions = new ArrayList<>();
         ArrayList<String> images = new ArrayList<>();
         ArrayList<String> ids = new ArrayList<>();
+        ArrayList<String> userIds = new ArrayList<>();
 
         Log.d("Data", data.toString());
         Log.d("Success", success + "!");
@@ -203,12 +204,14 @@ public class ItemOverviewActivity extends AppCompatActivity {
                 descriptions.add(itemData.getJSONObject(i).getString("description"));
                 String itemId = Integer.toString(itemData.getJSONObject(i).getInt("id"));
                 ids.add(itemId);
-                images.add("http://student-market.co.uk/storage/item/1/K1Om0n1q36lv0WsHINfIzYbRwMWEE6bP8pbb4H2g.jpeg");
+                String userId = Integer.toString(itemData.getJSONObject(i).getInt("user_id"));
+                userIds.add(userId);
+                images.add("https://student-market.co.uk/storage/item/1/K1Om0n1q36lv0WsHINfIzYbRwMWEE6bP8pbb4H2g.jpeg");
             }
 
             // ADD ITEMS TO LIST VIEW ON SCREEN
             listView = findViewById(R.id.listview);
-            CustomAdapter adapter = new CustomAdapter(this, titles, descriptions, ids, images);
+            CustomAdapter adapter = new CustomAdapter(this, titles, descriptions, ids, userIds, images);
             listView.setAdapter(adapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -216,9 +219,11 @@ public class ItemOverviewActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
                     Intent details = new Intent(ItemOverviewActivity.this, ItemDetailsActivity.class);
                     String itemId = ((TextView) view.findViewById(R.id.textviewid)).getText().toString();
+                    String userId = ((TextView) view.findViewById(R.id.textviewuserid)).getText().toString();
                     Log.d("ItemID", itemId);
 //                    startActivityForResult(details, Integer.parseInt(itemId));
                     details.putExtra("id", itemId);
+                    details.putExtra("userId", userId);
                     startActivity(details);
 
                 }
@@ -240,8 +245,9 @@ class CustomAdapter extends ArrayAdapter<String> {
     ArrayList<String> descriptionArray;
     ArrayList<String> idArray;
     ArrayList<String> imageArray;
+    ArrayList<String> userIdArray;
 
-    CustomAdapter(Context c, ArrayList<String> titles, ArrayList<String> descriptions, ArrayList<String> id, ArrayList<String> images) {
+    CustomAdapter(Context c, ArrayList<String> titles, ArrayList<String> descriptions, ArrayList<String> id, ArrayList<String> userId, ArrayList<String> images) {
 
         super(c, R.layout.single_row, R.id.textviewtitle, titles);
         this.context = c;
@@ -249,6 +255,7 @@ class CustomAdapter extends ArrayAdapter<String> {
         this.descriptionArray = descriptions;
         this.idArray = id;
         this.imageArray = images;
+        this.userIdArray = userId;
     }
 
     @Override
@@ -259,11 +266,13 @@ class CustomAdapter extends ArrayAdapter<String> {
         TextView itemTitle = row.findViewById(R.id.textviewtitle);
         TextView itemDescription = row.findViewById(R.id.textviewdescription);
         TextView itemId = row.findViewById(R.id.textviewid);
+        TextView userId = row.findViewById(R.id.textviewuserid);
 
 //        itemImage.setImageResource();
         itemTitle.setText(titleArray.get(position));
         itemDescription.setText(descriptionArray.get(position));
         itemId.setText(idArray.get(position));
+        userId.setText(userIdArray.get(position));
 
         return row;
     }
