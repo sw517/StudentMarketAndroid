@@ -162,7 +162,14 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             JSONObject json_response = new JSONObject(response);
                             if (type.equals("login")) {
-                                processLogin(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
+                                if(!json_response.getBoolean("success")) {
+                                    Integer test = json_response.getInt("data");
+                                    JSONObject data = new JSONObject(("{\"test\":\""+test.toString()+"\"}"));
+
+                                    processLogin(json_response.getBoolean("success"), json_response.getString("message"), data);
+                                } else {
+                                    processLogin(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
