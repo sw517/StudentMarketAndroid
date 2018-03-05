@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -155,6 +156,9 @@ public class AccountActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawers();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -266,6 +270,11 @@ public class AccountActivity extends AppCompatActivity {
 
                         try {
                             JSONObject json_response = new JSONObject(response);
+                            if (json_response.getBoolean("success")) {
+
+                                Toast.makeText(AccountActivity.this, "Successfully updated account details",
+                                        Toast.LENGTH_LONG).show();
+                            }
 
 //                            processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
 
