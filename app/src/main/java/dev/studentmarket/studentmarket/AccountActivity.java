@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,6 +94,17 @@ public class AccountActivity extends AppCompatActivity {
                     }
                 });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // SET PROFILE IMAGE IN NAV DRAWER
+        View hView =  navigationView.getHeaderView(0);
+        ImageView navheaderimage = (ImageView) hView.findViewById(R.id.navheaderimage);
+
+        String imgURL = getProfileImg();
+        if (imgURL != null) {
+            String absoluteURL = "https://student-market.co.uk/storage/" + imgURL;
+            Picasso.with(getApplicationContext()).load(absoluteURL).into(navheaderimage);
+        }
+
 
         // OPEN FILES TO GET LOCALLY STORED API TOKEN
         apiToken = getAPIToken();
@@ -182,6 +195,29 @@ public class AccountActivity extends AppCompatActivity {
                 stringBuffer.append(fileString);
                 String apiToken = stringBuffer.toString();
                 return apiToken;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Find local file containing User Profile Img URL
+     */
+    public String getProfileImg() {
+        try {
+            String fileString;
+            FileInputStream fileInputStream = openFileInput("localUserImg");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while((fileString=bufferedReader.readLine()) != null) {
+                stringBuffer.append(fileString);
+                String url = stringBuffer.toString();
+                return url;
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

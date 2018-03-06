@@ -3,6 +3,9 @@ package dev.studentmarket.studentmarket;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,6 +33,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,8 +43,12 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -93,6 +101,17 @@ public class ItemOverviewActivity extends AppCompatActivity {
                 });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // SET PROFILE IMAGE IN NAV DRAWER
+        View hView =  navigationView.getHeaderView(0);
+        ImageView navheaderimage = (ImageView) hView.findViewById(R.id.navheaderimage);
+
+        String imgURL = getProfileImg();
+        if (imgURL != null) {
+            String absoluteURL = "https://student-market.co.uk/storage/" + imgURL;
+            Picasso.with(getApplicationContext()).load(absoluteURL).into(navheaderimage);
+        }
+
+
         // OPEN FILE TO GET LOCALLY STORED API TOKEN
         apiToken = getAPIToken();
 
@@ -114,6 +133,7 @@ public class ItemOverviewActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     /**
      * Submits a POST request to the API
@@ -165,9 +185,31 @@ public class ItemOverviewActivity extends AppCompatActivity {
             StringBuffer stringBuffer = new StringBuffer();
             while((fileString=bufferedReader.readLine()) != null) {
                 stringBuffer.append(fileString);
-                Log.d("APITOKENREADING", stringBuffer.toString());
                 String apiToken = stringBuffer.toString();
                 return apiToken;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Find local file containing User Profile Img URL
+     */
+    public String getProfileImg() {
+        try {
+            String fileString;
+            FileInputStream fileInputStream = openFileInput("localUserImg");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while((fileString=bufferedReader.readLine()) != null) {
+                stringBuffer.append(fileString);
+                String url = stringBuffer.toString();
+                return url;
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -268,7 +310,7 @@ class CustomAdapter extends ArrayAdapter<String> {
         TextView itemId = row.findViewById(R.id.textviewid);
         TextView userId = row.findViewById(R.id.textviewuserid);
 
-//        itemImage.setImageResource();
+        Picasso.with(context).load(imageArray.get(position)).into(itemImage);
         itemTitle.setText(titleArray.get(position));
         itemDescription.setText(descriptionArray.get(position));
         itemId.setText(idArray.get(position));

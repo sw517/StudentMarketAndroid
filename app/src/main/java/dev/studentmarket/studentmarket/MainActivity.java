@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ItemOverviewActivity.class);
         String varAPIKEY = "";
         String varUserId = "";
+        String varUserImg = "";
 
         Log.d("Data", data.toString());
         Log.d("Success", success + "!");
@@ -112,6 +113,15 @@ public class MainActivity extends AppCompatActivity {
         catch (JSONException e) {
             e.printStackTrace();
         }
+
+        // GET Img URL
+        try {
+            varUserImg = data.getString("profile_picture");
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("Profile Image", varUserImg);
 
         // CREATE LOCAL FILE FOR API TOKEN
         String filename = "localAPIToken";
@@ -135,6 +145,19 @@ public class MainActivity extends AppCompatActivity {
             outputStreamId = openFileOutput(filename, Context.MODE_PRIVATE);
             outputStreamId.write(fileContents.getBytes());
             outputStreamId.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // CREATE LOCAL FILE FOR PROFILE IMAGE URL
+        filename = "localUserImg";
+        fileContents = varUserImg;
+        FileOutputStream outputStreamImg;
+
+        try {
+            outputStreamImg = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStreamImg.write(fileContents.getBytes());
+            outputStreamImg.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
