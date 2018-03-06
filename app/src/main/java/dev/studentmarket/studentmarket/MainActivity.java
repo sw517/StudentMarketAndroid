@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         String varAPIKEY = "";
         String varUserId = "";
         String varUserImg = "";
+        String varUserName = "";
 
         Log.d("Data", data.toString());
         Log.d("Success", success + "!");
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // GET API TOKEN
+        // GET User ID
         try {
             varUserId = data.getString("id");
         }
@@ -116,12 +117,24 @@ public class MainActivity extends AppCompatActivity {
 
         // GET Img URL
         try {
-            varUserImg = data.getString("profile_picture");
+            if (data.getString("profile_picture") == null) {
+                varUserImg = "null";
+            } else {
+                varUserImg = data.getString("profile_picture");
+            }
         }
         catch (JSONException e) {
             e.printStackTrace();
         }
         Log.d("Profile Image", varUserImg);
+
+        // GET USERS NAME
+        try {
+            varUserName = data.getString("first_name") + data.getString("last_name");
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         // CREATE LOCAL FILE FOR API TOKEN
         String filename = "localAPIToken";
@@ -158,6 +171,19 @@ public class MainActivity extends AppCompatActivity {
             outputStreamImg = openFileOutput(filename, Context.MODE_PRIVATE);
             outputStreamImg.write(fileContents.getBytes());
             outputStreamImg.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // CREATE LOCAL FILE FOR User's Name
+        filename = "localUserName";
+        fileContents = varUserName;
+        FileOutputStream outputStreamUserName;
+
+        try {
+            outputStreamUserName = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStreamUserName.write(fileContents.getBytes());
+            outputStreamUserName.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

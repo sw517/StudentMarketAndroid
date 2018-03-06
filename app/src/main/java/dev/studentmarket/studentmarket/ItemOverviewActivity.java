@@ -106,7 +106,8 @@ public class ItemOverviewActivity extends AppCompatActivity {
         ImageView navheaderimage = (ImageView) hView.findViewById(R.id.navheaderimage);
 
         String imgURL = getProfileImg();
-        if (imgURL != null) {
+        Log.d("IMGURL", imgURL);
+        if (!imgURL.equals("null")) {
             String absoluteURL = "https://student-market.co.uk/storage/" + imgURL;
             Picasso.with(getApplicationContext()).load(absoluteURL).into(navheaderimage);
         }
