@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -41,6 +42,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // USED TO CHECK IF BACK BUTTON WAS PRESSED IN LOGIN SCREEN, IF SO - CLOSE APP
+        if (getIntent().getBooleanExtra("EXIT", false)) {
+            finishAffinity();
+        }
+
         Button registerUser = (Button) findViewById(R.id.bRegisterForm);
 
         registerUser.setOnClickListener(new View.OnClickListener() {
@@ -57,7 +63,10 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        this.finishAndRemoveTask();
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("EXIT", true);
+        startActivity(intent);
     }
 
     /**
@@ -137,6 +146,13 @@ public class MainActivity extends AppCompatActivity {
             final TextView loginStatus = (TextView) findViewById(R.id.loginStatusText);
 
             loginStatus.setText(message);
+
+            // CLOSE KEYBOARD WHEN LOGIN BUTTON PRESSED SO LOGIN STATUS IS VISIBLE
+            InputMethodManager inputManager = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
 
             // Fade out animation
             AlphaAnimation fadeOut = new AlphaAnimation(1.0f, 0.0f);

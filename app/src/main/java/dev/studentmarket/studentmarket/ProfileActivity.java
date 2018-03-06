@@ -205,7 +205,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 //      GET USER DATA
         try {
-            JSONObject userData = data.getJSONObject("user");
+            JSONObject userData = data.getJSONObject("viewUser");
 
             String firstNameStr = userData.getString("first_name");
             String lastNameStr = userData.getString("last_name");
