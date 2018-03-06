@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
         // GET USERS NAME
         try {
-            varUserName = data.getString("first_name") + data.getString("last_name");
+            varUserName = data.getString("first_name") + " " + data.getString("last_name");
         }
         catch (JSONException e) {
             e.printStackTrace();

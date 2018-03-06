@@ -98,6 +98,8 @@ public class AccountActivity extends AppCompatActivity {
         // SET PROFILE IMAGE IN NAV DRAWER
         View hView =  navigationView.getHeaderView(0);
         ImageView navheaderimage = (ImageView) hView.findViewById(R.id.navheaderimage);
+        TextView navheadername = (TextView) hView.findViewById(R.id.nav_header_name);
+        navheadername.setText(getUserName());
 
         String imgURL = getProfileImg();
         if (imgURL != null) {
@@ -218,6 +220,29 @@ public class AccountActivity extends AppCompatActivity {
                 stringBuffer.append(fileString);
                 String url = stringBuffer.toString();
                 return url;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Find local file containing User Name
+     */
+    public String getUserName() {
+        try {
+            String fileString;
+            FileInputStream fileInputStream = openFileInput("localUserName");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while((fileString=bufferedReader.readLine()) != null) {
+                stringBuffer.append(fileString);
+                String name = stringBuffer.toString();
+                return name;
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
