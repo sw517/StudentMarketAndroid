@@ -268,13 +268,24 @@ public class ItemOverviewActivity extends AppCompatActivity {
             Log.d("Item1", item1.toString());
 
             for(int i = 0; i < itemData.length(); i++) {
+                // TITLE
                 titles.add(itemData.getJSONObject(i).getString("name"));
+                // DESCRIPTION
                 descriptions.add(itemData.getJSONObject(i).getString("description"));
+                // ITEM ID
                 String itemId = Integer.toString(itemData.getJSONObject(i).getInt("id"));
                 ids.add(itemId);
+                // USER ID
                 String userId = Integer.toString(itemData.getJSONObject(i).getInt("user_id"));
                 userIds.add(userId);
-                images.add("https://student-market.co.uk/storage/item/1/K1Om0n1q36lv0WsHINfIzYbRwMWEE6bP8pbb4H2g.jpeg");
+                // IMAGES
+                if (itemData.getJSONObject(i).getJSONArray("images").length() > 0) {
+                    String imageURL = itemData.getJSONObject(i).getJSONArray("images").getJSONObject(0).getString("path");
+                    String abURL = "https://student-market.co.uk/storage/" + imageURL;
+                    images.add(abURL);
+                } else {
+                    images.add("null");
+                }
             }
 
             // ADD ITEMS TO LIST VIEW ON SCREEN
@@ -306,6 +317,7 @@ public class ItemOverviewActivity extends AppCompatActivity {
 
 /**
  * This class goes through the view rows for the adapter and applies the data to the XML Elements
+ * Essentially this populates each list item
  */
 class CustomAdapter extends ArrayAdapter<String> {
     Context context;
@@ -336,7 +348,9 @@ class CustomAdapter extends ArrayAdapter<String> {
         TextView itemId = row.findViewById(R.id.textviewid);
         TextView userId = row.findViewById(R.id.textviewuserid);
 
-        Picasso.with(context).load(imageArray.get(position)).into(itemImage);
+        if (!imageArray.get(position).equals("null")) {
+            Picasso.with(context).load(imageArray.get(position)).into(itemImage);
+        }
         itemTitle.setText(titleArray.get(position));
         itemDescription.setText(descriptionArray.get(position));
         itemId.setText(idArray.get(position));
