@@ -299,22 +299,25 @@ public class ItemDetailsActivity extends AppCompatActivity {
                 // ADD IMAGES TO IMAGE VIEWS
                 if (itemData.getJSONArray("images").length() > 0) {
                     for (int i = 0; i < itemData.getJSONArray("images").length(); i++) {
-                        // GET FILE PATH
-                        String imageURL = itemData.getJSONArray("images").getJSONObject(i).getString("path");
-                        final String abURL = "https://student-market.co.uk/storage/" + imageURL;
-                        // ASSIGN IMAGE TO IMAGE VIEW
-                        Picasso.with(getApplicationContext()).load(abURL).into(imageViews.get(i));
-                        imageViews.get(i).setVisibility(View.VISIBLE); // SET IMAGE TO VISIBLE (IMAGE VIEWS ARE HIDDEN BY DEFAULT)
-                        // ADD ABILITY TO ENLARGE IMAGE BY LOADING IN NEW PAGE
-                        imageViews.get(i).setOnClickListener(new View.OnClickListener() {
-                            public void onClick(View v) {
-                                Intent intent = new Intent(getApplicationContext(), ImageViewActivity.class);
-                                intent.putExtra("url", abURL);
-                                intent.putExtra("id", itemId);
-                                intent.putExtra("userId", userId);
-                                startActivity(intent);
-                            }
-                        });
+                        // APP WILL BREAK IF MORE THAN 7 IMAGES ARE UPLOADED
+                        if (i < 6) {
+                            // GET FILE PATH
+                            String imageURL = itemData.getJSONArray("images").getJSONObject(i).getString("path");
+                            final String abURL = "https://student-market.co.uk/storage/" + imageURL;
+                            // ASSIGN IMAGE TO IMAGE VIEW
+                            Picasso.with(getApplicationContext()).load(abURL).into(imageViews.get(i));
+                            imageViews.get(i).setVisibility(View.VISIBLE); // SET IMAGE TO VISIBLE (IMAGE VIEWS ARE HIDDEN BY DEFAULT)
+                            // ADD ABILITY TO ENLARGE IMAGE BY LOADING IN NEW PAGE
+                            imageViews.get(i).setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(getApplicationContext(), ImageViewActivity.class);
+                                    intent.putExtra("url", abURL);
+                                    intent.putExtra("id", itemId);
+                                    intent.putExtra("userId", userId);
+                                    startActivity(intent);
+                                }
+                            });
+                        }
                     }
                 }
 
