@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -32,7 +33,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -269,12 +272,33 @@ public class ProfileActivity extends AppCompatActivity {
         try {
             JSONObject userData = data.getJSONObject("viewUser");
 
+            // GET NAME
             String firstNameStr = userData.getString("first_name");
             String lastNameStr = userData.getString("last_name");
-
             TextView nameET = (TextView) findViewById(R.id.profileName);
-
             nameET.setText(firstNameStr + " " + lastNameStr);
+
+            // GET REVIEWS
+            JSONObject userReviews = data.getJSONObject("userReviews");
+            ArrayList<Integer> ratings = new ArrayList<>();
+            Iterator<?> keys = userReviews.keys();
+            while( keys.hasNext() ) {
+                String key = (String)keys.next();
+                if ( userReviews.get(key) instanceof JSONObject ) {
+                    int rating = userReviews.getJSONObject(key).getInt("rating");
+                    ratings.add(rating);
+                }
+            }
+            int averageRating = 0;
+            int totalRatings = ratings.size();
+            RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+            TextView numRatings = (TextView) findViewById(R.id.numReviews);
+            for (int i = 0; i < ratings.size(); i++) {
+                averageRating += ratings.get(i);
+            }
+            averageRating = (averageRating / totalRatings);
+            ratingBar.setRating(averageRating);
+            numRatings.setText("(" + Integer.toString(totalRatings) + ")");
 
         } catch (JSONException e) {
             e.printStackTrace();
