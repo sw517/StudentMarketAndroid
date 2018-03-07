@@ -22,7 +22,9 @@
         <activity android:name=".ItemOverviewActivity" />
         <activity android:name=".ItemDetailsActivity" />
         <activity android:name=".AccountActivity" />
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".ImageViewActivity"
+            android:parentActivityName=".ItemDetailsActivity"/>
     </application>
 
 </manifest>

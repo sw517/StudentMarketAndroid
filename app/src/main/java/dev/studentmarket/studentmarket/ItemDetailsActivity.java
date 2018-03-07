@@ -50,9 +50,8 @@ public class ItemDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_details);
-        String itemId = getIntent().getExtras().getString("id", "0");
+        final String itemId = getIntent().getExtras().getString("id", "0");
         userId = getIntent().getExtras().getString("userId", "0");
-        Log.d("Got user ID", userId);
 
         // OPEN FILE TO GET LOCALLY STORED API TOKEN
         apiToken = getAPIToken();
@@ -103,7 +102,6 @@ public class ItemDetailsActivity extends AppCompatActivity {
             String absoluteURL = "https://student-market.co.uk/storage/" + imgURL;
             Picasso.with(getApplicationContext()).load(absoluteURL).into(navheaderimage);
         }
-
 
         postRequest("https://student-market.co.uk/api/items/1/" + itemId + "?api_token=" + apiToken, "items");
     }
@@ -247,19 +245,25 @@ public class ItemDetailsActivity extends AppCompatActivity {
             try {
                 JSONObject itemData = data.getJSONObject("item");
                 Log.d("ItemData", itemData.toString());
+                final String itemId = itemData.getString("id");
+                // TITLE
                 String title = itemData.getString("name");
+                TextView titleText = (TextView)findViewById(R.id.itemDetailsTitle);
+                titleText.setText(title);
+                // SELL TYPE
                 String dtype = itemData.getString("type");
+                TextView typeText = (TextView)findViewById(R.id.itemDetailsType);
+                // DESCRIPTION
                 String description = itemData.getString("description");
+                TextView descriptionText = (TextView)findViewById(R.id.itemDetailsDescription);
+                descriptionText.setText(description);
+                // PRICE
                 String price = itemData.getString("price");
+                // TRADE
                 String trade = itemData.getString("trade");
 
-                TextView titleText = (TextView)findViewById(R.id.itemDetailsTitle);
-                TextView typeText = (TextView)findViewById(R.id.itemDetailsType);
-                TextView descriptionText = (TextView)findViewById(R.id.itemDetailsDescription);
                 TextView costText = (TextView)findViewById(R.id.itemDetailsCost);
 
-                titleText.setText(title);
-                descriptionText.setText(description);
 
                 // CHANGE LETTER CASING TO LOOK NEATER
                 // AND FORMAT COST TEXT
@@ -276,6 +280,44 @@ public class ItemDetailsActivity extends AppCompatActivity {
                     costText.setText(cost);
                 }
 
+                // IMAGES
+                // FIND IMAGE VIEWS FROM ACTIVITY
+                ArrayList<ImageView> imageViews = new ArrayList<ImageView>(); // IMAGE VIEW ARRAY
+                ImageView mainImage = (ImageView) findViewById(R.id.itemMainImage);
+                ImageView subImage1 = (ImageView) findViewById(R.id.subImage1);
+                ImageView subImage2 = (ImageView) findViewById(R.id.subImage2);
+                ImageView subImage3 = (ImageView) findViewById(R.id.subImage3);
+                ImageView subImage4 = (ImageView) findViewById(R.id.subImage4);
+                ImageView subImage5 = (ImageView) findViewById(R.id.subImage5);
+                // ADD IMAGE VIEWS TO ARRAY
+                imageViews.add(mainImage);
+                imageViews.add(subImage1);
+                imageViews.add(subImage2);
+                imageViews.add(subImage3);
+                imageViews.add(subImage4);
+                imageViews.add(subImage5);
+                // ADD IMAGES TO IMAGE VIEWS
+                if (itemData.getJSONArray("images").length() > 0) {
+                    for (int i = 0; i < itemData.getJSONArray("images").length(); i++) {
+                        // GET FILE PATH
+                        String imageURL = itemData.getJSONArray("images").getJSONObject(i).getString("path");
+                        final String abURL = "https://student-market.co.uk/storage/" + imageURL;
+                        // ASSIGN IMAGE TO IMAGE VIEW
+                        Picasso.with(getApplicationContext()).load(abURL).into(imageViews.get(i));
+                        imageViews.get(i).setVisibility(View.VISIBLE); // SET IMAGE TO VISIBLE (IMAGE VIEWS ARE HIDDEN BY DEFAULT)
+                        // ADD ABILITY TO ENLARGE IMAGE BY LOADING IN NEW PAGE
+                        imageViews.get(i).setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                Intent intent = new Intent(getApplicationContext(), ImageViewActivity.class);
+                                intent.putExtra("url", abURL);
+                                intent.putExtra("id", itemId);
+                                intent.putExtra("userId", userId);
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -286,7 +328,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     *  Called when the user presses login
+     *  View Seller profile page
      */
     public void viewSeller(View view) {
         Intent details = new Intent(ItemDetailsActivity.this, ProfileActivity.class);

@@ -22,15 +22,74 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minHeight="200dp"
+                android:minHeight="300dp"
                 android:padding="15dp"
                 app:srcCompat="@mipmap/ic_launcher" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/subImage1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:visibility="gone"
+                        android:maxHeight="100dp"
+                        android:adjustViewBounds="true"
+                        app:srcCompat="@mipmap/ic_launcher" />
+                    <ImageView
+                        android:id="@+id/subImage2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:visibility="gone"
+                        android:maxHeight="100dp"
+                        android:adjustViewBounds="true"
+                        app:srcCompat="@mipmap/ic_launcher" />
+                    <ImageView
+                        android:id="@+id/subImage3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:visibility="gone"
+                        android:maxHeight="100dp"
+                        android:adjustViewBounds="true"
+                        app:srcCompat="@mipmap/ic_launcher" />
+                    <ImageView
+                        android:id="@+id/subImage4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:visibility="gone"
+                        android:maxHeight="100dp"
+                        android:adjustViewBounds="true"
+                        app:srcCompat="@mipmap/ic_launcher" />
+                    <ImageView
+                        android:id="@+id/subImage5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:visibility="gone"
+                        android:maxHeight="100dp"
+                        android:adjustViewBounds="true"
+                        app:srcCompat="@mipmap/ic_launcher" />
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <TextView
                 android:id="@+id/itemDetailsTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingTop="20dp"
                 android:paddingBottom="30dp"
                 android:text="TextView"
                 android:textSize="24sp"
