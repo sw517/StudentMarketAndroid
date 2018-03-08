@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -280,6 +281,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             // GET REVIEWS
             JSONObject userReviews = data.getJSONObject("userReviews");
+
             ArrayList<Integer> ratings = new ArrayList<>();
             Iterator<?> keys = userReviews.keys();
             while( keys.hasNext() ) {
@@ -299,6 +301,12 @@ public class ProfileActivity extends AppCompatActivity {
             averageRating = (averageRating / totalRatings);
             ratingBar.setRating(averageRating);
             numRatings.setText("(" + Integer.toString(totalRatings) + ")");
+
+            // MAKE REVIEWS BUTTON VISIBLE IF THERE ARE REVIEWS
+            if (userReviews.length() > 0) {
+                Button reviewbtn = (Button) findViewById(R.id.btnViewReviews);
+                reviewbtn.setVisibility(View.VISIBLE);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
