@@ -26,7 +26,8 @@
         <activity
             android:name=".ImageViewActivity"
             android:parentActivityName=".ItemDetailsActivity" />
-        <activity android:name=".ReviewsViewActivity"></activity>
+        <activity android:name=".ReviewsViewActivity" />
+        <activity android:name=".WriteReviewActivity"></activity>
     </application>
 
 </manifest>

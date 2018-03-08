@@ -104,7 +104,8 @@
             android:gravity="center"
             android:minWidth="250dp"
             android:text="Write Review"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:onClick="writeReview"/>
     </RelativeLayout>
 
 
