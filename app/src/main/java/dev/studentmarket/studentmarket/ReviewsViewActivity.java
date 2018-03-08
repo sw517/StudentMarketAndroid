@@ -209,9 +209,7 @@ public class ReviewsViewActivity extends AppCompatActivity {
 
                         try {
                             JSONObject json_response = new JSONObject(response);
-                            if (type.equals("items")) {
-                                processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
-                            }
+                            processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -238,7 +236,7 @@ public class ReviewsViewActivity extends AppCompatActivity {
      */
     public void processData(Boolean success, String message, JSONObject data) {
         ListView listView;
-        ArrayList<String> names = new ArrayList<>();
+//        ArrayList<String> names = new ArrayList<>();
         ArrayList<String> descriptions = new ArrayList<>();
         ArrayList<String> userIds = new ArrayList<>();
         ArrayList<Integer> ratings = new ArrayList<>();
@@ -249,7 +247,6 @@ public class ReviewsViewActivity extends AppCompatActivity {
 
         // GET REVIEW DATA
         try {
-            // GET REVIEWS
             JSONObject userReviews = data.getJSONObject("userReviews");
             Log.d("Reviews", userReviews.toString());
             Iterator<?> keys = userReviews.keys();
@@ -261,7 +258,7 @@ public class ReviewsViewActivity extends AppCompatActivity {
                     userIds.add(buyerId);
                     // DESCRIPTION
                     String description = userReviews.getJSONObject(key).getString("review");
-                    descriptions.add(buyerId);
+                    descriptions.add(description);
                     // RATING
                     int rating = userReviews.getJSONObject(key).getInt("rating");
                     ratings.add(rating);
@@ -270,21 +267,21 @@ public class ReviewsViewActivity extends AppCompatActivity {
 
             // ADD ITEMS TO LIST VIEW ON SCREEN
             listView = findViewById(R.id.listview);
-            ReviewAdapter adapter = new ReviewAdapter(this, names, descriptions, userIds, ratings);
+            ReviewAdapter adapter = new ReviewAdapter(this, descriptions, userIds, ratings);
             listView.setAdapter(adapter);
 
-//            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-//                    Intent details = new Intent(ItemOverviewActivity.this, ItemDetailsActivity.class);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
+                    Intent details = new Intent(ReviewsViewActivity.this, ItemOverviewActivity.class);
 //                    String itemId = ((TextView) view.findViewById(R.id.textviewid)).getText().toString();
 //                    String userId = ((TextView) view.findViewById(R.id.textviewuserid)).getText().toString();
 //                    details.putExtra("id", itemId);
 //                    details.putExtra("userId", userId);
-//                    startActivity(details);
-//
-//                }
-//            });
+                    startActivity(details);
+
+                }
+            });
 
 
         } catch (JSONException e) {
@@ -299,16 +296,14 @@ public class ReviewsViewActivity extends AppCompatActivity {
  */
 class ReviewAdapter extends ArrayAdapter<String> {
     Context context;
-    ArrayList<String> titleArray;
     ArrayList<String> descriptionArray;
     ArrayList<String> userIdArray;
     ArrayList<Integer> ratingArray;
 
-    ReviewAdapter(Context c, ArrayList<String> titles, ArrayList<String> descriptions, ArrayList<String> userId, ArrayList<Integer> ratings) {
+    ReviewAdapter(Context c, ArrayList<String> descriptions, ArrayList<String> userId, ArrayList<Integer> ratings) {
 
-        super(c, R.layout.single_row, R.id.textviewtitle, titles);
+        super(c, R.layout.review_row, R.id.reviewUserDescription, descriptions);
         this.context = c;
-        this.titleArray = titles;
         this.descriptionArray = descriptions;
         this.userIdArray = userId;
         this.ratingArray = ratings;
@@ -317,16 +312,13 @@ class ReviewAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View row = layoutInflater.inflate(R.layout.single_row, parent, false);
-        TextView reviewName = row.findViewById(R.id.reviewUserName);
+        View row = layoutInflater.inflate(R.layout.review_row, parent, false);
         TextView reviewDescription = row.findViewById(R.id.reviewUserDescription);
         RatingBar ratingBar = row.findViewById(R.id.ratingBar);
-//        TextView userId = row.findViewById(R.id.textviewuserid);
+        Log.d("Review User", userIdArray.get(position));
 
-        reviewName.setText(titleArray.get(position));
         reviewDescription.setText(descriptionArray.get(position));
         ratingBar.setRating(ratingArray.get(position));
-//        userId.setText(userIdArray.get(position));
 
         return row;
     }

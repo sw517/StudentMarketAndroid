@@ -17,6 +17,7 @@
         android:clickable="false"
         android:contextClickable="false"
         android:isIndicator="true"
+        android:paddingTop="10dp"
         android:numStars="5" />
 
     <TextView
