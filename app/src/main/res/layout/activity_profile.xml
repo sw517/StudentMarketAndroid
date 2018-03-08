@@ -60,6 +60,25 @@
             android:layout_marginStart="11dp"
             android:layout_toEndOf="@+id/ratingBar"
             android:text="(0)" />
+
+        <Button
+            android:id="@+id/btnMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btnViewReviews"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="15dp"
+            android:text="Message Seller" />
+
+        <Button
+            android:id="@+id/btnViewReviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="44dp"
+            android:text="View Reviews"
+            android:onClick="viewReviews"/>
     </RelativeLayout>
 
 

@@ -23,8 +23,10 @@
         <activity android:name=".ItemDetailsActivity" />
         <activity android:name=".AccountActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".ImageViewActivity"
-            android:parentActivityName=".ItemDetailsActivity"/>
+        <activity
+            android:name=".ImageViewActivity"
+            android:parentActivityName=".ItemDetailsActivity" />
+        <activity android:name=".ReviewsViewActivity"></activity>
     </application>
 
 </manifest>
