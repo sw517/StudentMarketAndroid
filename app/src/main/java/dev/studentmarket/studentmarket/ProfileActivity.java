@@ -111,6 +111,16 @@ public class ProfileActivity extends AppCompatActivity {
             Picasso.with(getApplicationContext()).load(absoluteURL).into(navheaderimage);
         }
 
+        // HIDE WRITE REVIEW BUTTON IF VIEWING OWN PROFILE
+//        if (userId.equals(getLocalUserId())) {
+//            Button btnWriteReview = (Button) findViewById(R.id.btnWriteReview);
+//            btnWriteReview.setVisibility(View.GONE);
+//            // MOVE VIEW-REVIEW BUTTON UP IN PLACE
+//            Button btnViewReviews = (Button) findViewById(R.id.btnViewReviews);
+//            btnViewReviews.se
+//
+//        }
+
 
         getRequest("https://student-market.co.uk/api/view/" + userId + "?api_token=" + apiToken, "view");
     }

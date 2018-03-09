@@ -90,7 +90,7 @@
             android:onClick="viewReviews"
             android:text="View Reviews"
             android:textColor="@android:color/background_light"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/btnWriteReview"
