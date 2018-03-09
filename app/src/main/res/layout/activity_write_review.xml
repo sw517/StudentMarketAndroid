@@ -49,7 +49,8 @@
             android:layout_centerHorizontal="true"
             android:backgroundTint="@color/colorPrimary"
             android:text="Submit Review"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:onClick="createReview"/>
 
     </RelativeLayout>
 

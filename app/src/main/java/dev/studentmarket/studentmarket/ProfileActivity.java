@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -112,14 +113,16 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         // HIDE WRITE REVIEW BUTTON IF VIEWING OWN PROFILE
-//        if (userId.equals(getLocalUserId())) {
-//            Button btnWriteReview = (Button) findViewById(R.id.btnWriteReview);
-//            btnWriteReview.setVisibility(View.GONE);
-//            // MOVE VIEW-REVIEW BUTTON UP IN PLACE
-//            Button btnViewReviews = (Button) findViewById(R.id.btnViewReviews);
-//            btnViewReviews.se
-//
-//        }
+        if (userId.equals(getLocalUserId())) {
+            Button btnWriteReview = (Button) findViewById(R.id.btnWriteReview);
+            btnWriteReview.setVisibility(View.GONE);
+            // MOVE VIEW-REVIEW BUTTON UP IN PLACE
+            Button btnMessage = (Button) findViewById(R.id.btnMessage);
+            Button btnViewReviews = (Button) findViewById(R.id.btnViewReviews);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) btnViewReviews.getLayoutParams();
+            lp.addRule(RelativeLayout.BELOW, btnMessage.getId());
+
+        }
 
 
         getRequest("https://student-market.co.uk/api/view/" + userId + "?api_token=" + apiToken, "view");
