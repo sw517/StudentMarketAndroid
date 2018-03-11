@@ -85,6 +85,9 @@ public class ItemOverviewActivity extends AppCompatActivity {
                         if (navTitle.equals("All Items")) {
                             Intent intent = new Intent(className, ItemOverviewActivity.class);
                             startActivity(intent);
+                        } else if (navTitle.equals("Messages")) {
+                            Intent intent = new Intent(className, MessagesActivity.class);
+                            startActivity(intent);
                         } else if (navTitle.equals("Profile")) {
                             Intent intent = new Intent(className, ProfileActivity.class);
                             startActivity(intent);

@@ -78,6 +78,9 @@ public class ReviewsViewActivity extends AppCompatActivity {
                         } else if (navTitle.equals("Profile")) {
                             Intent intent = new Intent(className, ProfileActivity.class);
                             startActivity(intent);
+                        } else if (navTitle.equals("Messages")) {
+                            Intent intent = new Intent(className, MessagesActivity.class);
+                            startActivity(intent);
                         } else if (navTitle.equals("Account")) {
                             Intent intent = new Intent(className, AccountActivity.class);
                             startActivity(intent);
@@ -277,14 +280,13 @@ public class ReviewsViewActivity extends AppCompatActivity {
             ReviewAdapter adapter = new ReviewAdapter(this, descriptions, userIds, ratings);
             listView.setAdapter(adapter);
 
+            // LOAD USER'S PROFILE WHEN REVIEW IS CLICKED
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-                    Intent details = new Intent(ReviewsViewActivity.this, ItemOverviewActivity.class);
-//                    String itemId = ((TextView) view.findViewById(R.id.textviewid)).getText().toString();
-//                    String userId = ((TextView) view.findViewById(R.id.textviewuserid)).getText().toString();
-//                    details.putExtra("id", itemId);
-//                    details.putExtra("userId", userId);
+                    Intent details = new Intent(ReviewsViewActivity.this, ProfileActivity.class);
+                    String userId = ((TextView) view.findViewById(R.id.textviewuserid)).getText().toString();
+                    details.putExtra("userId", userId);
                     startActivity(details);
 
                 }
@@ -323,6 +325,8 @@ class ReviewAdapter extends ArrayAdapter<String> {
         TextView reviewDescription = row.findViewById(R.id.reviewUserDescription);
         RatingBar ratingBar = row.findViewById(R.id.ratingBar);
         Log.d("Review User", userIdArray.get(position));
+        TextView userId = row.findViewById(R.id.textviewuserid);
+        userId.setText(userIdArray.get(position));
 
         reviewDescription.setText(descriptionArray.get(position));
         ratingBar.setRating(ratingArray.get(position));

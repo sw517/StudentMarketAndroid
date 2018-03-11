@@ -76,6 +76,9 @@ public class ProfileActivity extends AppCompatActivity {
                         } else if (navTitle.equals("Profile")) {
                             Intent intent = new Intent(className, ProfileActivity.class);
                             startActivity(intent);
+                        } else if (navTitle.equals("Messages")) {
+                            Intent intent = new Intent(className, MessagesActivity.class);
+                            startActivity(intent);
                         } else if (navTitle.equals("Account")) {
                             Intent intent = new Intent(className, AccountActivity.class);
                             startActivity(intent);
@@ -112,16 +115,13 @@ public class ProfileActivity extends AppCompatActivity {
             Picasso.with(getApplicationContext()).load(absoluteURL).into(navheaderimage);
         }
 
-        // HIDE WRITE REVIEW BUTTON IF VIEWING OWN PROFILE
+        // HIDE WRITE REVIEW & MESSAGE BUTTONS IF VIEWING OWN PROFILE
         if (userId.equals(getLocalUserId())) {
             Button btnWriteReview = (Button) findViewById(R.id.btnWriteReview);
             btnWriteReview.setVisibility(View.GONE);
-            // MOVE VIEW-REVIEW BUTTON UP IN PLACE
             Button btnMessage = (Button) findViewById(R.id.btnMessage);
-            Button btnViewReviews = (Button) findViewById(R.id.btnViewReviews);
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) btnViewReviews.getLayoutParams();
-            lp.addRule(RelativeLayout.BELOW, btnMessage.getId());
-
+            btnWriteReview.setVisibility(View.GONE);
+            btnMessage.setVisibility(View.GONE);
         }
 
 

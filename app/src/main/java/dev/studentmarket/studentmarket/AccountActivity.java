@@ -83,6 +83,9 @@ public class AccountActivity extends AppCompatActivity {
                         } else if (navTitle.equals("Profile")) {
                             Intent intent = new Intent(className, ProfileActivity.class);
                             startActivity(intent);
+                        } else if (navTitle.equals("Messages")) {
+                            Intent intent = new Intent(className, MessagesActivity.class);
+                            startActivity(intent);
                         } else if (navTitle.equals("Account")) {
                             Intent intent = new Intent(className, AccountActivity.class);
                             startActivity(intent);

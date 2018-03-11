@@ -62,49 +62,52 @@
             android:layout_toEndOf="@+id/ratingBar"
             android:text="(0)" />
 
-        <Button
-            android:id="@+id/btnMessage"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profileName"
-            android:layout_marginTop="11dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:layout_centerHorizontal="true"
-            android:drawableLeft="@android:drawable/ic_dialog_email"
-            android:minWidth="250dp"
-            android:text="Message Seller"
-            android:textColor="@android:color/white" />
-
-        <Button
-            android:id="@+id/btnViewReviews"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnWriteReview"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="9dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:drawableLeft="@android:drawable/btn_star"
-            android:drawableTint="@android:color/background_light"
-            android:minWidth="250dp"
-            android:onClick="viewReviews"
-            android:text="View Reviews"
-            android:textColor="@android:color/background_light"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/btnWriteReview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnMessage"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="9dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:drawableStart="@android:drawable/ic_menu_edit"
             android:gravity="center"
-            android:minWidth="250dp"
-            android:text="Write Review"
-            android:textColor="@android:color/white"
-            android:onClick="writeReview"/>
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:drawableLeft="@android:drawable/ic_dialog_email"
+                android:minWidth="250dp"
+                android:text="Message Seller"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnViewReviews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:drawableLeft="@android:drawable/btn_star"
+                android:drawableTint="@android:color/background_light"
+                android:minWidth="250dp"
+                android:onClick="viewReviews"
+                android:text="View Reviews"
+                android:textColor="@android:color/background_light"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnWriteReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:drawableStart="@android:drawable/ic_menu_edit"
+                android:gravity="center"
+                android:minWidth="250dp"
+                android:onClick="writeReview"
+                android:text="Write Review"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
     </RelativeLayout>
 
 

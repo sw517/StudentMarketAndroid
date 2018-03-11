@@ -2,7 +2,6 @@ package dev.studentmarket.studentmarket;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Rating;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -10,13 +9,16 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,6 +28,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,29 +37,24 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-public class WriteReviewActivity extends AppCompatActivity {
+public class MessagesActivity extends AppCompatActivity {
 
     private Map<String, String> parameters = new HashMap<>(); // Here we store all of our parameters that are used in API requests
 
-    private String apiToken = "";
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private Context className;
-    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_write_review);
-
-        // OPEN FILE TO GET LOCALLY STORED API TOKEN
-        apiToken = getAPIToken();
-
-        // GET INTENT EXTRAS
-        userId = getIntent().getExtras().getString("userId", "0");
+        setContentView(R.layout.activity_messages);
+        String apiToken = ""; // CREATE INSTANCE TO ASSIGN FROM FILE
 
         // NEEDED FOR NAVIGATION MENU
         className =  this.getApplicationContext();
@@ -86,27 +84,33 @@ public class WriteReviewActivity extends AppCompatActivity {
                             Intent intent = new Intent(className, AccountActivity.class);
                             startActivity(intent);
                         } else if (navTitle.equals("Logout")) {
-//                            postRequest("https://student-market.co.uk/api/logout?api_token=" + apiToken, "logout");
-
                             Intent intent = new Intent(className, MainActivity.class);
                             startActivity(intent);
                         }
+
                         return true;
                     }
                 });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // SET PROFILE IMAGE IN NAV DRAWER
+        // SET PROFILE IMAGE AND NAME IN NAV DRAWER
         View hView =  navigationView.getHeaderView(0);
         ImageView navheaderimage = (ImageView) hView.findViewById(R.id.navheaderimage);
         TextView navheadername = (TextView) hView.findViewById(R.id.nav_header_name);
         navheadername.setText(getUserName());
 
         String imgURL = getProfileImg();
-        if (imgURL != null) {
+        Log.d("IMGURL", imgURL);
+        if (!imgURL.equals("null")) {
             String absoluteURL = "https://student-market.co.uk/storage/" + imgURL;
             Picasso.with(getApplicationContext()).load(absoluteURL).into(navheaderimage);
         }
+
+        // OPEN FILE TO GET LOCALLY STORED API TOKEN
+        apiToken = getAPIToken();
+
+        getMessages("https://student-market.co.uk/api/messages?api_token=" + apiToken, "messages");
+
     }
 
     /**
@@ -137,7 +141,6 @@ public class WriteReviewActivity extends AppCompatActivity {
             StringBuffer stringBuffer = new StringBuffer();
             while((fileString=bufferedReader.readLine()) != null) {
                 stringBuffer.append(fileString);
-                Log.d("APITOKENREADING", stringBuffer.toString());
                 String apiToken = stringBuffer.toString();
                 return apiToken;
             }
@@ -198,9 +201,9 @@ public class WriteReviewActivity extends AppCompatActivity {
     /**
      * Submits a POST request to the API
      */
-    public void postRequest(String url, final String type) {
+    public void getMessages(String url, final String type) {
         RequestQueue queue = Volley.newRequestQueue(this);
-        StringRequest request = new StringRequest(Request.Method.POST, url,
+        StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
 
                     @Override
@@ -209,22 +212,7 @@ public class WriteReviewActivity extends AppCompatActivity {
 
                         try {
                             JSONObject json_response = new JSONObject(response);
-
-                            if (!json_response.getBoolean("success")) {
-
-                                Toast.makeText(WriteReviewActivity.this, "Error processing review",
-                                        Toast.LENGTH_LONG).show();
-
-                            } else if (type.equals("reviews")) {
-                                Intent intent = new Intent(getApplicationContext(), ReviewsViewActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                intent.putExtra("reviewAdded", "true");
-                                intent.putExtra("userId", userId);
-                                startActivity(intent);
-                            }
-
-//                            processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
-
+                            processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -246,21 +234,77 @@ public class WriteReviewActivity extends AppCompatActivity {
         queue.add(request);
     }
 
+
     /**
-     *  Called when the user presses submit on write review
+     * Here we process the data our API provides us with
      */
-    public void createReview(View view) {
-        apiToken = getAPIToken();
-        EditText etReview = (EditText) findViewById(R.id.etReview);
-        RatingBar ratingBar = (RatingBar) findViewById(R.id.reviewRatingBar);
+    public void processData(Boolean success, String message, JSONObject data) {
+        ListView listView;
+        ArrayList<String> names = new ArrayList<>();
 
-        String review = etReview.getText().toString();
-        String rating = Integer.toString(ratingBar.getNumStars());
+        Log.d("Data", data.toString());
+        Log.d("Success", success + "!");
+        Log.d("Message", message);
 
-        parameters.clear();
-        parameters.put("review", review);
-        parameters.put("rating", rating);
-        postRequest("https://student-market.co.uk/api/view/" + userId + "/reviews?api_token=" + apiToken, "reviews");
-        finish();
+        // GET MESSAGE DATA
+        try {
+            JSONArray userList= data.getJSONArray("userList");
+            Log.d("Message User List", userList.toString());
+            for (int i = 0; i < userList.length(); i++) {
+                JSONObject user = userList.getJSONObject(i);
+                String name = user.getString("sender_id"); // CHANGE SENDER ID TO NAME AFTER API UPDATE
+                Log.d("User", name);
+                names.add(name);
+            }
+
+            // ADD MESSAGE LIST TO LIST VIEW ON SCREEN
+            listView = findViewById(R.id.listview);
+            MessagesAdapter adapter = new MessagesAdapter(this, names);
+            listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
+                    Intent details = new Intent(MessagesActivity.this, ItemOverviewActivity.class);
+//                    String itemId = ((TextView) view.findViewById(R.id.textviewid)).getText().toString();
+//                    String userId = ((TextView) view.findViewById(R.id.textviewuserid)).getText().toString();
+//                    details.putExtra("id", itemId);
+//                    details.putExtra("userId", userId);
+                    startActivity(details);
+
+                }
+            });
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+/**
+ * This class goes through the view rows for the adapter and applies the data to the XML Elements
+ * Essentially this populates each message item
+ */
+class MessagesAdapter extends ArrayAdapter<String> {
+    Context context;
+    ArrayList<String> namesArray;
+
+    MessagesAdapter(Context c, ArrayList<String> names) {
+
+        super(c, R.layout.message_row, R.id.messageUserName, names);
+        this.context = c;
+        this.namesArray = names;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View row = layoutInflater.inflate(R.layout.message_row, parent, false);
+        TextView messageName = row.findViewById(R.id.messageUserName);
+
+        messageName.setText(namesArray.get(position));
+
+        return row;
     }
 }
