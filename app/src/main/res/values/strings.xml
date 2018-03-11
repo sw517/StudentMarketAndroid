@@ -17,4 +17,5 @@
     <string name="profile">Profile</string>
     <string name="seller_profile">Seller Profile</string>
     <string name="loading_name">Loading name</string>
+    <string name="loading_details">Loading details</string>
 </resources>

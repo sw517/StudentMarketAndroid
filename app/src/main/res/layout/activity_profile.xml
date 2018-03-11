@@ -37,9 +37,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/imageView3"
             android:layout_centerHorizontal="true"
-            android:clickable="false"
-            android:contextClickable="false"
             android:isIndicator="true"
+            android:onClick="viewReviews"
             android:numStars="5" />
 
         <TextView

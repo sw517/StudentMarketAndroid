@@ -211,10 +211,13 @@ public class WriteReviewActivity extends AppCompatActivity {
 
                                 Toast.makeText(WriteReviewActivity.this, "Error processing review",
                                         Toast.LENGTH_LONG).show();
-                            }
 
-                            if (type.equals("reviews")) {
-
+                            } else if (type.equals("reviews")) {
+                                Intent intent = new Intent(getApplicationContext(), ReviewsViewActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.putExtra("reviewAdded", "true");
+                                intent.putExtra("userId", userId);
+                                startActivity(intent);
                             }
 
 //                            processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
@@ -255,5 +258,6 @@ public class WriteReviewActivity extends AppCompatActivity {
         parameters.put("review", review);
         parameters.put("rating", rating);
         postRequest("https://student-market.co.uk/api/view/" + userId + "/reviews?api_token=" + apiToken, "reviews");
+        finish();
     }
 }

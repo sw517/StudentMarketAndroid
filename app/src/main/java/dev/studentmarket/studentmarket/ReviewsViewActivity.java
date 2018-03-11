@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -107,6 +108,12 @@ public class ReviewsViewActivity extends AppCompatActivity {
         apiToken = getAPIToken();
 
         String userId = getIntent().getExtras().getString("userId", "0");
+
+        if(getIntent().hasExtra("reviewAdded")){
+            Toast.makeText(this, "Review Added",
+                    Toast.LENGTH_LONG).show();
+        }
+
         getReviews("https://student-market.co.uk/api/view/" + userId + "?api_token=" + apiToken, "view");
     }
 
