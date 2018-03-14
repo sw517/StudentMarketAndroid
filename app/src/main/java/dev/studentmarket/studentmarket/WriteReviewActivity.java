@@ -107,6 +107,12 @@ public class WriteReviewActivity extends AppCompatActivity {
             String absoluteURL = "https://student-market.co.uk/storage/" + imgURL;
             Picasso.with(getApplicationContext()).load(absoluteURL).into(navheaderimage);
         }
+
+        EditText etReview = (EditText) findViewById(R.id.etReview);
+        RatingBar ratingBar = (RatingBar) findViewById(R.id.reviewRatingBar);
+
+        String review = etReview.getText().toString();
+        String rating = Integer.toString(ratingBar.getNumStars());
     }
 
     /**
@@ -210,12 +216,7 @@ public class WriteReviewActivity extends AppCompatActivity {
                         try {
                             JSONObject json_response = new JSONObject(response);
 
-                            if (!json_response.getBoolean("success")) {
-
-                                Toast.makeText(WriteReviewActivity.this, "Error processing review",
-                                        Toast.LENGTH_LONG).show();
-
-                            } else if (type.equals("reviews")) {
+                            if (json_response.getBoolean("success")) {
                                 Intent intent = new Intent(getApplicationContext(), ReviewsViewActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 intent.putExtra("reviewAdded", "true");
@@ -255,12 +256,20 @@ public class WriteReviewActivity extends AppCompatActivity {
         RatingBar ratingBar = (RatingBar) findViewById(R.id.reviewRatingBar);
 
         String review = etReview.getText().toString();
-        String rating = Integer.toString(ratingBar.getNumStars());
+        String rating = Float.toString(ratingBar.getRating());
 
-        parameters.clear();
-        parameters.put("review", review);
-        parameters.put("rating", rating);
-        postRequest("https://student-market.co.uk/api/view/" + userId + "/reviews?api_token=" + apiToken, "reviews");
-        finish();
+        // ENSURE FORM IS FILLED BEFORE SENDING
+        if (ratingBar.getRating() == 0
+                || review.equals("")
+                || review.isEmpty()) {
+            Toast.makeText(WriteReviewActivity.this, "Please complete review before submitting",
+                    Toast.LENGTH_LONG).show();
+        } else {
+            parameters.clear();
+            parameters.put("review", review);
+            parameters.put("rating", rating);
+            postRequest("https://student-market.co.uk/api/view/" + userId + "/reviews?api_token=" + apiToken, "reviews");
+            finish();
+        }
     }
 }

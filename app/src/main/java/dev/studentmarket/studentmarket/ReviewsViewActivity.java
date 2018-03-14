@@ -246,7 +246,7 @@ public class ReviewsViewActivity extends AppCompatActivity {
      */
     public void processData(Boolean success, String message, JSONObject data) {
         ListView listView;
-//        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> names = new ArrayList<>();
         ArrayList<String> descriptions = new ArrayList<>();
         ArrayList<String> userIds = new ArrayList<>();
         ArrayList<Integer> ratings = new ArrayList<>();
@@ -257,27 +257,45 @@ public class ReviewsViewActivity extends AppCompatActivity {
 
         // GET REVIEW DATA
         try {
-            JSONObject userReviews = data.getJSONObject("userReviews");
-            Log.d("Reviews", userReviews.toString());
-            Iterator<?> keys = userReviews.keys();
-            while( keys.hasNext() ) {
-                String key = (String)keys.next();
-                if ( userReviews.get(key) instanceof JSONObject ) {
-                    // ID
-                    String buyerId = userReviews.getJSONObject(key).getString("buyer_id");
-                    userIds.add(buyerId);
-                    // DESCRIPTION
-                    String description = userReviews.getJSONObject(key).getString("review");
-                    descriptions.add(description);
-                    // RATING
-                    int rating = userReviews.getJSONObject(key).getInt("rating");
-                    ratings.add(rating);
-                }
+
+            JSONArray userReviews = data.getJSONArray("userReviews");
+            for (int i = 0; i < userReviews.length(); i++) {
+                JSONObject review = userReviews.getJSONObject(i);
+                // ID
+                String buyerId = review.getString("buyer_id");
+                userIds.add(buyerId);
+                // NAME
+                String name = review.getJSONObject("reviewer").getString("first_name") + " " + review.getJSONObject("reviewer").getString("last_name");
+                names.add(name);
+                // DESCRIPTION
+                String description = review.getString("review");
+                descriptions.add(description);
+                // RATING
+                int rating = review.getInt("rating");
+                ratings.add(rating);
             }
+
+            // OLD CODE FOR WHEN API USED JSON OBJECT INSTEAD OF ARRAY FOR REVIEWS
+//            JSONObject userReviews = data.getJSONObject("userReviews");
+//            Iterator<?> keys = userReviews.keys();
+//            while( keys.hasNext() ) {
+//                String key = (String)keys.next();
+//                if ( userReviews.get(key) instanceof JSONObject ) {
+//                    // ID
+//                    String buyerId = userReviews.getJSONObject(key).getString("buyer_id");
+//                    userIds.add(buyerId);
+//                    // DESCRIPTION
+//                    String description = userReviews.getJSONObject(key).getString("review");
+//                    descriptions.add(description);
+//                    // RATING
+//                    int rating = userReviews.getJSONObject(key).getInt("rating");
+//                    ratings.add(rating);
+//                }
+//            }
 
             // ADD ITEMS TO LIST VIEW ON SCREEN
             listView = findViewById(R.id.listview);
-            ReviewAdapter adapter = new ReviewAdapter(this, descriptions, userIds, ratings);
+            ReviewAdapter adapter = new ReviewAdapter(this, descriptions, userIds, ratings, names);
             listView.setAdapter(adapter);
 
             // LOAD USER'S PROFILE WHEN REVIEW IS CLICKED
@@ -308,28 +326,35 @@ class ReviewAdapter extends ArrayAdapter<String> {
     ArrayList<String> descriptionArray;
     ArrayList<String> userIdArray;
     ArrayList<Integer> ratingArray;
+    ArrayList<String> namesArray;
 
-    ReviewAdapter(Context c, ArrayList<String> descriptions, ArrayList<String> userId, ArrayList<Integer> ratings) {
+    ReviewAdapter(Context c, ArrayList<String> descriptions, ArrayList<String> userId, ArrayList<Integer> ratings, ArrayList<String> names) {
 
         super(c, R.layout.review_row, R.id.reviewUserDescription, descriptions);
         this.context = c;
         this.descriptionArray = descriptions;
         this.userIdArray = userId;
         this.ratingArray = ratings;
+        this.namesArray = names;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row = layoutInflater.inflate(R.layout.review_row, parent, false);
+        // REVIEW
         TextView reviewDescription = row.findViewById(R.id.reviewUserDescription);
+        reviewDescription.setText(descriptionArray.get(position));
+        // RATING
         RatingBar ratingBar = row.findViewById(R.id.ratingBar);
-        Log.d("Review User", userIdArray.get(position));
+        ratingBar.setRating(ratingArray.get(position));
+        // USER ID (HIDDEN)
         TextView userId = row.findViewById(R.id.textviewuserid);
         userId.setText(userIdArray.get(position));
-
-        reviewDescription.setText(descriptionArray.get(position));
-        ratingBar.setRating(ratingArray.get(position));
+        Log.d("TextView ID", userId.getText().toString());
+        // NAME
+        TextView reviewName = row.findViewById(R.id.reviewUserName);
+        reviewName.setText(namesArray.get(position));
 
         return row;
     }

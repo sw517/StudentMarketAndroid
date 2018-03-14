@@ -293,17 +293,25 @@ public class ProfileActivity extends AppCompatActivity {
             nameET.setText(firstNameStr + " " + lastNameStr);
 
             // GET REVIEWS
-            JSONObject userReviews = data.getJSONObject("userReviews");
-
+            JSONArray userReviews = data.getJSONArray("userReviews");
             ArrayList<Integer> ratings = new ArrayList<>();
-            Iterator<?> keys = userReviews.keys();
-            while( keys.hasNext() ) {
-                String key = (String)keys.next();
-                if ( userReviews.get(key) instanceof JSONObject ) {
-                    int rating = userReviews.getJSONObject(key).getInt("rating");
-                    ratings.add(rating);
-                }
+            for (int i = 0; i < userReviews.length(); i++) {
+                JSONObject review = userReviews.getJSONObject(i);
+                int rating = review.getInt("rating");
+                ratings.add(rating);
             }
+
+            // OLD CODE FOR WHEN API USED JSON OBJECT INSTEAD OF ARRAY FOR REVIEWS
+//            JSONObject userReviews = data.getJSONObject("userReviews");
+//            Iterator<?> keys = userReviews.keys();
+//            while( keys.hasNext() ) {
+//                String key = (String)keys.next();
+//                if ( userReviews.get(key) instanceof JSONObject ) {
+//                    int rating = userReviews.getJSONObject(key).getInt("rating");
+//                    ratings.add(rating);
+//                }
+//            }
+
             int averageRating = 0;
             int totalRatings = ratings.size();
             RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
@@ -311,7 +319,11 @@ public class ProfileActivity extends AppCompatActivity {
             for (int i = 0; i < ratings.size(); i++) {
                 averageRating += ratings.get(i);
             }
-            averageRating = (averageRating / totalRatings);
+
+            // ARITHMETIC EXCEPTION
+            if (totalRatings != 0) {
+                averageRating = (averageRating / totalRatings);
+            }
             ratingBar.setRating(averageRating);
             numRatings.setText("(" + Integer.toString(totalRatings) + ")");
 
