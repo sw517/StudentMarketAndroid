@@ -2,7 +2,10 @@ package dev.studentmarket.studentmarket;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,12 +17,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -50,12 +56,14 @@ public class ViewMessageActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mToggle;
     private Context className;
     private String messengerId;
+    private String messengerName;
+    private String apiToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_message);
-        String apiToken = ""; // CREATE INSTANCE TO ASSIGN FROM FILE
+        apiToken = ""; // CREATE INSTANCE TO ASSIGN FROM FILE
 
         // NEEDED FOR NAVIGATION MENU
         className =  this.getApplicationContext();
@@ -64,6 +72,14 @@ public class ViewMessageActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
 
+        // CLOSE KEYBOARD WHEN LOGIN BUTTON PRESSED SO LOGIN STATUS IS VISIBLE
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+
+        // SET UP NAVIGATION DRAWER
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -109,6 +125,12 @@ public class ViewMessageActivity extends AppCompatActivity {
 
         // OPEN FILE TO GET LOCALLY STORED API TOKEN
         apiToken = getAPIToken();
+
+        // SET MESSENGERS NAME IN TOP OF LAYOUT VIEW
+        String username = getIntent().getExtras().getString("username", "0");
+        TextView tvUserName = (TextView) findViewById(R.id.messengerName);
+        tvUserName.setText(username);
+        messengerName = username;
 
         // USER ID HERE IS THE PERSON WHO THE LOGGED IN USER IS MESSAGING, NOT THE AUTHORISED USER
         messengerId = getIntent().getExtras().getString("userId", "0");
@@ -201,7 +223,7 @@ public class ViewMessageActivity extends AppCompatActivity {
     }
 
     /**
-     * Submits a POST request to the API
+     * Submits a Get request to the API
      */
     public void getMessages(String url, final String type) {
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -287,6 +309,70 @@ public class ViewMessageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Submits a POST request to the API
+     */
+    public void postMessage(String url, final String type) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest request = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("Response", response);
+
+                        try {
+                            JSONObject json_response = new JSONObject(response);
+                            processData(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error.Response", error.toString());
+                    }
+                }
+        ) {
+            @Override // We have to override here so that our own parameters are used
+            protected Map<String, String> getParams()
+            {
+                return parameters;
+            }
+        };
+        queue.add(request);
+    }
+
+    /**
+     *  Called when the user presses login
+     */
+    public void sendMessage(View view) {
+        EditText etMessage = (EditText) findViewById(R.id.etMessage);
+        String message = etMessage.getText().toString();
+
+        if (message != null && !message.isEmpty()) {
+            parameters.clear();
+            parameters.put("message", message);
+            Log.d("Test", "Working 1");
+            postMessage("https://student-market.co.uk/api/messages/" + messengerId + "?api_token=" + apiToken, "messages");
+            Log.d("Test", "Working 2");
+
+            Intent intent = new Intent(ViewMessageActivity.this, ViewMessageActivity.class);
+            String userId = messengerId;
+            String username = messengerName;
+            intent.putExtra("userId", userId);
+            intent.putExtra("username", username);
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, "Message box is empty",
+                    Toast.LENGTH_LONG).show();
+            Log.d("Send Message", "Message Empty");
+        }
+    }
 }
 
 
@@ -313,18 +399,18 @@ class ViewMessagesAdapter extends ArrayAdapter<String> {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row = layoutInflater.inflate(R.layout.message_bubble, parent, false);
-        TextView message = row.findViewById(R.id.message);
+        TextView message = (TextView) row.findViewById(R.id.message);
         message.setText(messageArray.get(position));
 
         // CHANGE STYLING OF MESSAGE IF FROM AUTHORISED USER
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(80, 0, 0, 0); // llp.setMargins(left, top, right, bottom);
+        params.setMargins(80, 0, 0, 15); // llp.setMargins(left, top, right, bottom);
         params.gravity = Gravity.END;
-//        params.setBackgroundResource(R.color.white);
 
         if (senderArray.get(position).equals("currentUser")) {
             // change message styling
             message.setLayoutParams(params);
+            message.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
         }
 
         return row;

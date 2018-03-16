@@ -274,7 +274,6 @@ public class MessagesActivity extends AppCompatActivity {
                     details.putExtra("userId", userId);
                     details.putExtra("username", username);
                     startActivity(details);
-
                 }
             });
 
