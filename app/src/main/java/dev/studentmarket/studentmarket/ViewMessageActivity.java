@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,8 +17,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -39,21 +40,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-public class MessagesActivity extends AppCompatActivity {
+public class ViewMessageActivity extends AppCompatActivity {
 
     private Map<String, String> parameters = new HashMap<>(); // Here we store all of our parameters that are used in API requests
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private Context className;
+    private String messengerId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_messages);
+        setContentView(R.layout.activity_view_message);
         String apiToken = ""; // CREATE INSTANCE TO ASSIGN FROM FILE
 
         // NEEDED FOR NAVIGATION MENU
@@ -109,8 +110,9 @@ public class MessagesActivity extends AppCompatActivity {
         // OPEN FILE TO GET LOCALLY STORED API TOKEN
         apiToken = getAPIToken();
 
-        getMessages("https://student-market.co.uk/api/messages?api_token=" + apiToken, "messages");
-
+        // USER ID HERE IS THE PERSON WHO THE LOGGED IN USER IS MESSAGING, NOT THE AUTHORISED USER
+        messengerId = getIntent().getExtras().getString("userId", "0");
+        getMessages("https://student-market.co.uk/api/messages/" + messengerId + "?api_token=" + apiToken, "messages");
     }
 
     /**
@@ -240,8 +242,9 @@ public class MessagesActivity extends AppCompatActivity {
      */
     public void processData(Boolean success, String message, JSONObject data) {
         ListView listView;
-        ArrayList<String> names = new ArrayList<>();
-        ArrayList<String> ids = new ArrayList<>();
+        ArrayList<String> messages = new ArrayList<>();
+        ArrayList<String> userIds = new ArrayList<>();
+        ArrayList<String> sender = new ArrayList<>();
 
         Log.d("Data", data.toString());
         Log.d("Success", success + "!");
@@ -249,32 +252,33 @@ public class MessagesActivity extends AppCompatActivity {
 
         // GET MESSAGE DATA
         try {
-            JSONArray userList= data.getJSONArray("userList");
-            Log.d("Message User List", userList.toString());
-            for (int i = 0; i < userList.length(); i++) {
-                JSONObject user = userList.getJSONObject(i);
-                String name = user.getString("first_name") + " " + user.getString("last_name");
-                names.add(name);
+            JSONArray userMessages = data.getJSONArray("messages");
+            Log.d("Message User List", userMessages.toString());
+            for (int i = 0; i < userMessages.length(); i++) {
+                JSONObject messageObject = userMessages.getJSONObject(i);
+                String userMessage = messageObject.getString("message");
+                messages.add(userMessage);
+                String messageUserId = messageObject.getString("sender_id");
+                userIds.add(messageUserId);
 
-                String id = user.getString("sender_id");
-                ids.add(id);
+                if (messageUserId.equals(messengerId)) {
+                    sender.add("sender");
+                } else {
+                    sender.add("currentUser");
+                }
             }
+            Log.d("Test", "working1");
 
             // ADD MESSAGE LIST TO LIST VIEW ON SCREEN
             listView = findViewById(R.id.listview);
-            MessagesAdapter adapter = new MessagesAdapter(this, names, ids);
+            ViewMessagesAdapter adapter = new ViewMessagesAdapter(this, messages, userIds, sender);
             listView.setAdapter(adapter);
+            Log.d("Test", "working2");
+
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-                    Intent details = new Intent(MessagesActivity.this, ViewMessageActivity.class);
-                    String userId = ((TextView) view.findViewById(R.id.messageUserId)).getText().toString();
-                    String username = ((TextView) view.findViewById(R.id.messageUserName)).getText().toString();
-                    details.putExtra("userId", userId);
-                    details.putExtra("username", username);
-                    startActivity(details);
-
                 }
             });
 
@@ -285,32 +289,43 @@ public class MessagesActivity extends AppCompatActivity {
     }
 }
 
+
 /**
  * This class goes through the view rows for the adapter and applies the data to the XML Elements
  * Essentially this populates each message item
  */
-class MessagesAdapter extends ArrayAdapter<String> {
+class ViewMessagesAdapter extends ArrayAdapter<String> {
     Context context;
-    ArrayList<String> namesArray;
-    ArrayList<String> idArray;
+    ArrayList<String> messageArray;
+    ArrayList<String> userIdArray;
+    ArrayList<String> senderArray;
 
-    MessagesAdapter(Context c, ArrayList<String> names, ArrayList<String> ids) {
+    ViewMessagesAdapter(Context c, ArrayList<String> messages, ArrayList<String> userIds, ArrayList<String> sender) {
 
-        super(c, R.layout.message_row, R.id.messageUserName, names);
+        super(c, R.layout.message_row, R.id.messageUserName, messages);
         this.context = c;
-        this.namesArray = names;
-        this.idArray = ids;
+        this.messageArray = messages;
+        this.userIdArray = userIds;
+        this.senderArray = sender;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View row = layoutInflater.inflate(R.layout.message_row, parent, false);
-        TextView messageName = row.findViewById(R.id.messageUserName);
-        messageName.setText(namesArray.get(position));
+        View row = layoutInflater.inflate(R.layout.message_bubble, parent, false);
+        TextView message = row.findViewById(R.id.message);
+        message.setText(messageArray.get(position));
 
-        TextView messageId = row.findViewById(R.id.messageUserId);
-        messageId.setText(idArray.get(position));
+        // CHANGE STYLING OF MESSAGE IF FROM AUTHORISED USER
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(80, 0, 0, 0); // llp.setMargins(left, top, right, bottom);
+        params.gravity = Gravity.END;
+//        params.setBackgroundResource(R.color.white);
+
+        if (senderArray.get(position).equals("currentUser")) {
+            // change message styling
+            message.setLayoutParams(params);
+        }
 
         return row;
     }

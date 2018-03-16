@@ -28,7 +28,8 @@
             android:parentActivityName=".ItemDetailsActivity" />
         <activity android:name=".ReviewsViewActivity" />
         <activity android:name=".WriteReviewActivity" />
-        <activity android:name=".MessagesActivity"></activity>
+        <activity android:name=".MessagesActivity" />
+        <activity android:name=".ViewMessageActivity"></activity>
     </application>
 
 </manifest>
