@@ -72,12 +72,6 @@ public class ViewMessageActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
 
-        // CLOSE KEYBOARD WHEN LOGIN BUTTON PRESSED SO LOGIN STATUS IS VISIBLE
-        InputMethodManager inputManager = (InputMethodManager)
-                getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
 
         // SET UP NAVIGATION DRAWER
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -359,6 +353,13 @@ public class ViewMessageActivity extends AppCompatActivity {
             Log.d("Test", "Working 1");
             postMessage("https://student-market.co.uk/api/messages/" + messengerId + "?api_token=" + apiToken, "messages");
             Log.d("Test", "Working 2");
+
+            // CLOSE KEYBOARD WHEN LOGIN BUTTON PRESSED SO LOGIN STATUS IS VISIBLE
+            InputMethodManager inputManager = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
 
             Intent intent = new Intent(ViewMessageActivity.this, ViewMessageActivity.class);
             String userId = messengerId;
