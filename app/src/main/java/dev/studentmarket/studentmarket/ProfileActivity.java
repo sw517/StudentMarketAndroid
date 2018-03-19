@@ -49,6 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mToggle;
     private Context className;
     private String userId;
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -290,7 +291,17 @@ public class ProfileActivity extends AppCompatActivity {
             String firstNameStr = userData.getString("first_name");
             String lastNameStr = userData.getString("last_name");
             TextView nameET = (TextView) findViewById(R.id.profileName);
-            nameET.setText(firstNameStr + " " + lastNameStr);
+            username = firstNameStr + " " + lastNameStr;
+            nameET.setText(username);
+
+            // GET PROFILE PICTURE
+            String profilePicture = userData.getString("profile_picture");
+            ImageView ivProfilePicture = (ImageView) findViewById(R.id.ivProfilePicture);
+
+            if (profilePicture != null) {
+                String profilePicURL = "https://student-market.co.uk/storage/" + profilePicture;
+                Picasso.with(getApplicationContext()).load(profilePicURL).into(ivProfilePicture);
+            }
 
             // GET REVIEWS
             JSONArray userReviews = data.getJSONArray("userReviews");
@@ -354,5 +365,18 @@ public class ProfileActivity extends AppCompatActivity {
         Intent details = new Intent(ProfileActivity.this, WriteReviewActivity.class);
         details.putExtra("userId", userId);
         startActivity(details);
+    }
+
+
+    /**
+     *  Write review of seller
+     */
+    public void messageSeller(View view) {
+        Intent intent = new Intent(ProfileActivity.this, ViewMessageActivity.class);
+        intent.putExtra("userId", userId);
+        intent.putExtra("username", username);
+        Log.d("User ID", userId);
+        Log.d("Username", username);
+        startActivity(intent);
     }
 }

@@ -256,7 +256,10 @@ public class WriteReviewActivity extends AppCompatActivity {
         RatingBar ratingBar = (RatingBar) findViewById(R.id.reviewRatingBar);
 
         String review = etReview.getText().toString();
-        String rating = Float.toString(ratingBar.getRating());
+        String rating = String.format("%d", (long)ratingBar.getRating());
+
+        Log.d("Review", review);
+        Log.d("Rating", rating);
 
         // ENSURE FORM IS FILLED BEFORE SENDING
         if (ratingBar.getRating() == 0
