@@ -39,7 +39,8 @@
             android:layout_marginRight="100dp"
             android:ems="10"
             android:hint="Type message"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:maxLength="255" />
 
         <Button
             android:id="@+id/btnSendMessage"

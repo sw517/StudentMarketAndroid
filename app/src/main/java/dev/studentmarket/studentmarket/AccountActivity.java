@@ -142,7 +142,7 @@ public class AccountActivity extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int day) {
                 month = month + 1;
-                String date = day + "/" + month + "/" + year;
+                String date = year + "-" + month + "-" + day;
                 mDisplayDate.setText(date);
             }
         };
@@ -319,6 +319,15 @@ public class AccountActivity extends AppCompatActivity {
             emailEt.setText(emailStr);
             dateOfBirthEt.setText(dateOfBirthStr);
 
+            // GET PROFILE PICTURE
+            String profilePicture = data.getString("profile_picture");
+            ImageView ivProfilePicture = (ImageView) findViewById(R.id.accountPicture);
+
+            if (profilePicture != null) {
+                String profilePicURL = "https://student-market.co.uk/storage/" + profilePicture;
+                Picasso.with(getApplicationContext()).load(profilePicURL).into(ivProfilePicture);
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -376,17 +385,56 @@ public class AccountActivity extends AppCompatActivity {
         EditText etLastName = (EditText) findViewById(R.id.accountLastName);
         EditText etEmail = (EditText) findViewById(R.id.accountEmail);
         EditText etDOB = (EditText) findViewById(R.id.accountDOB);
+        EditText etPassword = (EditText) findViewById(R.id.accountPassword);
+        EditText etConfirmPassword = (EditText) findViewById(R.id.accountConfirmPassword);
 
         String firstName = etFirstName.getText().toString();
+        if (firstName.matches("")) {
+            Toast.makeText(this, "You did not enter a first name", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String lastName = etLastName.getText().toString();
+        if (lastName.matches("")) {
+            Toast.makeText(this, "You did not enter a last name", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String email = etEmail.getText().toString();
+        if (email.matches("")) {
+            Toast.makeText(this, "You did not enter an email", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String dob= etDOB.getText().toString();
+        if (dob.matches("")) {
+            Toast.makeText(this, "You did not enter a date of birth", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
 
         parameters.clear();
         parameters.put("first_name", firstName);
         parameters.put("last_name", lastName);
         parameters.put("email", email);
         parameters.put("date_of_birth", dob);
+
+        // ONLY ADD PASSWORD IF NOT EMPTY
+        String password = etPassword.getText().toString();
+        if (!password.matches("")) {
+            parameters.put("password", password);
+        }
+
+        // ONLY ADD PASSWORD IF NOT EMPTY
+        String confirmPassword = etConfirmPassword.getText().toString();
+        if (!confirmPassword.matches("")) {
+            parameters.put("password_confirmation", confirmPassword);
+        }
+
+        // CHECK PASSWORD AND CONFIRMATION ARE THE SAME
+        if (!password.matches("") && confirmPassword.matches("")) {
+            Toast.makeText(this, "Please confirm password", Toast.LENGTH_SHORT).show();
+        } else if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+        }
+
         postRequest("https://student-market.co.uk/api/profile?api_token=" + apiToken, "profile");
     }
 }
