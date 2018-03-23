@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -65,7 +66,8 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int day) {
                 month = month + 1;
-                String date = day + "/" + month + "/" + year;
+//                String date = day + "/" + month + "/" + year;
+                String date = year + "-" + month + "-" + day; // MUST BE THIS FORMAT OTHERWISE API DOESNT WORK
                 mDisplayDate.setText(date);
             }
         };
@@ -99,25 +101,60 @@ public class RegisterActivity extends AppCompatActivity {
      *  Called when the user presses register
      */
     public void attemptRegistration(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
 
         EditText etFirstName = (EditText) findViewById(R.id.etFirstName);
         String firstName = etFirstName.getText().toString();
+        Log.d("FirstName", firstName);
+
+        if (firstName.matches("")) {
+            Toast.makeText(this, "You did not enter a first name", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         EditText etLastName = (EditText) findViewById(R.id.etLastName);
         String lastName = etLastName.getText().toString();
+        Log.d("LastName", lastName);
+
+        if (lastName.matches("")) {
+            Toast.makeText(this, "You did not enter a last name", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         EditText etEmail = (EditText) findViewById(R.id.etEmail);
         String email = etEmail.getText().toString();
+        Log.d("Email", email);
+
+        if (email.matches("")) {
+            Toast.makeText(this, "You did not enter an email", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         EditText etDOB = (EditText) findViewById(R.id.etDOB);
         String DOB = etDOB.getText().toString();
+        Log.d("DOB", DOB);
+
+        if (DOB.matches("")) {
+            Toast.makeText(this, "You did not enter a date of birth", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         EditText etPassword = (EditText) findViewById(R.id.etPassword);
         String password = etPassword.getText().toString();
+        Log.d("Password", password);
+
+        if (password.matches("")) {
+            Toast.makeText(this, "You did not enter a password", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         EditText etConfirmPassword = (EditText) findViewById(R.id.etConfirmPassword);
         String confirmPassword = etConfirmPassword.getText().toString();
+        Log.d("PasswordConfirm", confirmPassword);
+
+        if (confirmPassword.matches("")) {
+            Toast.makeText(this, "You did not confirm the password", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         parameters.clear();
         parameters.put("first_name", firstName);
@@ -129,17 +166,24 @@ public class RegisterActivity extends AppCompatActivity {
 
         postRequest("https://student-market.co.uk/api/register", "register");
 
-        startActivity(intent);
     }
 
     /**
      * Here we process the data our API provides us with
      */
-    public void processRegistration(JSONObject data) {
-        try {
-            Log.d("Data", "Hey, " + data.getString("first_name") + "!!!");
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public void processRegistration(Boolean success, String message, JSONObject data) {
+
+        Log.d("Data", data.toString());
+        Log.d("Success", success + "!");
+        Log.d("Message", message);
+
+        if (success) {
+            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+            startActivity(intent);
+            Toast.makeText(this, "Account successfully registered, please login", Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            Toast.makeText(this, "Registration unsuccessful, email may be in use", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -158,17 +202,21 @@ public class RegisterActivity extends AppCompatActivity {
                         try {
                             JSONObject json_response = new JSONObject(response);
                             if (type.equals("register")) {
-                                processRegistration(new JSONObject(json_response.getString("data")));
+                                processRegistration(json_response.getBoolean("success"), json_response.getString("message"), json_response.getJSONObject("data"));
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
+
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d("Error.Response", error.toString());
+                        showErrorToast();
                     }
                 }
         ) {
@@ -179,5 +227,9 @@ public class RegisterActivity extends AppCompatActivity {
             }
         };
         queue.add(request);
+    }
+
+    public void showErrorToast() {
+        Toast.makeText(this, "Unsuccessful: email may be in use", Toast.LENGTH_LONG).show();
     }
 }
